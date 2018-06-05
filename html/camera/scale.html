@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="viewport"
+          content="height=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+    <title>拍照</title>
+    <link rel="stylesheet" href="../../css/style.css"/>
+    <style type="text/css">
+        body {
+            background: transparent;
+            padding: 0;
+            margin: 0;
+        }
+
+        #zoom1 {
+
+        }
+
+        #zoom2 {
+            position: absolute;
+            left: 60px;
+        }
+
+        #zoom3 {
+            position: absolute;
+            left: 133px;
+        }
+
+        #zoom4 {
+            position: absolute;
+            left: 180px;
+        }
+
+        /*img {*/
+        /*border:none;*/
+        /*display: table;*/
+        /*width:170px;*/
+        /*height:60px;*/
+        /*}*/
+    </style>
+</head>
+<body>
+<div class="rule_control">
+    <span id="zoom1">0.0</span>
+    <span id="zoom2">0.5</span>
+    <span id="zoom3">1.0</span>
+    <span id="zoom4">1.5</span>
+</div>
+</body>
+</html>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script>
+
+    apiready = function () {
+        var zoom = api.pageParam.zoom || 1;
+        setZoom(zoom);
+        api.addEventListener({
+            name: 'setZoom'
+        }, function (ret, err) {
+            setZoom(ret.value.zoom);
+        });
+    }
+
+    function setZoom(zoom) {
+        $api.text($api.dom('#zoom2'), 0.5 * zoom);
+        $api.text($api.dom('#zoom3'), 1.0 * zoom);
+        $api.text($api.dom('#zoom4'), 1.5 * zoom);
+    }
+
+</script>

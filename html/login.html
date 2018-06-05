@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>登录</title>
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/login.css"/>
+</head>
+<body>
+    <div class"login"></div>
+    <div class="login_bg">
+        <div class="logo">
+            <img src="../images/login/logo.png" alt=""/>
+        </div>
+        <form id="login-form" action="">
+            <div class="userName">
+                <label><img src="../images/login/username_label_bg.png"></label>
+                <input type="text" name="name" placeholder="请输入手机号" required/>
+            </div>
+            <div class="passWord">
+                <label><img src="../images/login/password_label_bg.png"></label>
+                <input type="password" name="password" placeholder="请输入密码" required/>
+            </div>
+            <div class="choose_box">
+                <!--<div>
+                    <input type="checkbox" checked="checked" name="checkbox"/>
+                    <lable>记住密码</lable>
+                </div>-->
+                <a href="javascript:gotoForgetPsd()">忘记密码？</a>
+            </div>
+            <input id="loginBtn" class="login_btn" type="submit" value="登&nbsp;&nbsp;录">
+            <div class="choose_box">
+                <div class="auto_login">
+                    <!--<input type="checkbox" checked="checked" name="checkbox"/>-->
+                    <!--<lable>自动登录</lable>-->
+                </div>
+            </div>
+            <a href="javascript:gotoRegister();" class="register_btn" type="submit">注&nbsp;&nbsp;册</a>
+        </form>
+
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/app.js"></script>
+<script type="text/javascript" src="../script/user.js"></script>
+<script type="text/javascript" src="../script/navi.js"></script>
+<script>
+    apiready = function () {
+
+    }
+
+    document.getElementById('login-form').addEventListener('submit', function (e) {
+        var userName = $api.val($api.dom('input[name=name]'));
+        var password = $api.val($api.dom('input[name=password]'));
+        userUtil.login(userName, password, function (ret, err) {
+            if (ret.status) {
+                gotoMain();
+            } else {
+                var msg = '未知错误';
+                if (err && err.msg)
+                    msg = err.msg;
+                api.alert({
+                    title: '无法登陆',
+                    msg: msg,
+                    buttons: ['确定']
+                });
+            }
+        });
+        e.preventDefault();
+    }, false);
+</script>

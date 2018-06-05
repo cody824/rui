@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="viewport" content="height=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+    <title>添加患者</title>
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+    <div class="account_info">
+        <div class="regTop">
+            <span class="title">添加患者</span>
+            <a class="back" href="main.html"></a>
+        </div>
+        <div class="content" style="padding-bottom:0;">
+            <div class="add_patient">
+                <form id="add-patient-form" action="">
+                <div class="account_set">
+                    <div class="message">
+                        <span class="clear info">患者信息</span>
+                    </div>
+                </div>
+                <div class="message">
+                    <div class="message_line">
+                        <label>姓名</label>
+                        <input name="patientName" type="text" placeholder="请输入姓名" required/>
+                    </div>
+                    <div class="message_line">
+                        <label>年龄</label>
+                        <input name="age" type="number" placeholder="请输入年龄" required/>
+                    </div>
+                    <div id="sex-select" class="message_line">
+                        <label>性别</label>
+                        <input id="sex" name="sex" class="sex" type="text" placeholder="点击选择性别" required readonly/>
+                    </div>
+                    <div class="sex_choose">
+                    	<span>男</span>
+                        <span>女</span>
+                    </div>
+                </div>
+                <div class="account_set">
+                    <div class="message">
+                        <span class="clear option">可选项</span>
+                    </div>
+                </div>
+                <div class="message">
+                    <div class="message_line">
+                        <label>联系方式</label>
+                        <input name="contactInfo" type="tel" placeholder="请输入病人联系方式"/>
+                    </div>
+                    <div class="message_line">
+                        <label>就诊号</label>
+                        <input name="medicalNumber" type="text" placeholder="请输入就诊号"/>
+                    </div>
+                </div>
+                <button type="submit" class="submit add_submit">提交</button>
+            </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/app.js"></script>
+<script type="text/javascript" src="../script/patient.js"></script>
+<script type="text/javascript" src="../script/navi.js"></script>
+<script type="text/javascript">
+
+
+    document.getElementById('add-patient-form').addEventListener('submit', function (e) {
+        var sex = 1;
+        if ($api.val($api.dom('input[name=sex]')) === "女") {
+            sex = 0;
+        }
+        var patient = {
+            patientName: $api.val($api.dom('input[name=patientName]')),
+            age: $api.val($api.dom('input[name=age]')),
+            doctorId: appConfig.user.id,
+            sex: sex,
+            contactInfo: $api.val($api.dom('input[name=contactInfo]')),
+            medicalNumber: $api.val($api.dom('input[name=medicalNumber]'))
+        };
+        patientPool.add(patient, function () {
+            gotoMain();
+        });
+        e.preventDefault();
+    }, false);
+
+    $api.addEvt($api.dom('#sex-select'), 'click', function () {
+        var languageSelector = api.require("UIActionSelector");
+        languageSelector.open({
+            datas: [{name: "男", value: 1}, {name: "女", value: 0}],
+            layout: {
+                row: 4,
+                col: 1,
+                height: 40,
+                size: 20,
+                sizeActive: 22,
+                rowSpacing: 1,
+                colSpacing: 10,
+                maskBg: 'rgba(0,0,0,0.2)',
+                bg: '#fff',
+                color: '#888',
+                colorActive: '#f00',
+                colorSelected: '#f00'
+            },
+            animation: true,
+            cancel: {
+                text: '取消',
+                w: api.winWidth / 4,
+                // size: 12,
+                // w: 90,
+                // h: 35,
+                // bg: '#fff',
+                bgActive: '#ccc',
+                // color: '#888',
+                colorActive: '#fff'
+            },
+            ok: {
+                text: '确定',
+                // size: 12,
+                w: api.winWidth / 4,
+                // h: 40,
+                // bg: '#fff',
+                bgActive: '#ccc',
+                // color: '#888',
+                colorActive: '#fff'
+            },
+            title: {
+                text: '请选择性别',
+                // size: 12,
+                // h: 44,
+                // bg: '#eee',
+                // color: '#888'
+            },
+            fixedOn: api.frameName
+        }, function (ret, err) {
+            if (ret) {
+                if (ret.eventType == "ok") {
+                    var select = ret.selectedInfo[0].name;
+                    $api.val($api.dom('#sex'), select);
+                }
+            } else {
+                console.log(JSON.stringify(err));
+            }
+        });
+    });
+</script>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="viewport"
+          content="height=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+    <title>疾病列表</title>
+    <link rel="stylesheet" href="../../css/common.css"/>
+    <link rel="stylesheet" href="../../css/style.css"/>
+    <script type="text/javascript" src="../../js/jquery-2.0.0.min.js"></script>
+</head>
+<body style="background:#efeff4;">
+<div class="password_modify">
+    <div class="regTop clear">
+        <span class="title">疾病列表</span>
+        <a class="back" href="javascript:goBack()"></a>
+        <span class="plus"></span>
+    </div>
+    <div class="content" style="padding-bottom:0;">
+        <div class="search_bar">
+            <input id="disease-search" type="search" placeholder="搜索">
+            <span class="search_icon"></span>
+        </div>
+        <div class="brand_wrap clearfix">
+            <div class="brand">
+                <div class="brand_nav">
+                    <div class="brand_slide">
+                        <div class="numA-Z">
+                            <a href="javascript:void(0)" class="active">A</a> <a href="javascript:void(0)">B</a> <a
+                                href="javascript:void(0)">C</a> <a href="javascript:void(0)">D</a> <a
+                                href="javascript:void(0)">F</a> <a href="javascript:void(0)">G</a> <a
+                                href="javascript:void(0)">H</a> <a href="javascript:void(0)">J</a> <a
+                                href="javascript:void(0)">K</a> <a href="javascript:void(0)">L</a> <a
+                                href="javascript:void(0)">M</a> <a href="javascript:void(0)">N</a> <a
+                                href="javascript:void(0)">O</a> <a href="javascript:void(0)">Q</a> <a
+                                href="javascript:void(0)">R</a> <a href="javascript:void(0)">S</a> <a
+                                href="javascript:void(0)">T</a> <a href="javascript:void(0)">W</a> <a
+                                href="javascript:void(0)">X</a> <a href="javascript:void(0)">Y</a> <a
+                                href="javascript:void(0)">Z</a>
+                        </div>
+                    </div>
+                    <div class="brand_col">
+                        <div class="brand_list">
+                            <ul class="list_cont">
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--弹出-->
+<div class="shadow">
+    <div class="modify_msg plus_sharecode">
+        <input id="new-disease-name" type="text" placeholder="请输入疾病名称">
+        <button class="sure" type="button" style="margin-right:40px;">确定</button>
+        <button class="cancel" type="button">取消</button>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript" src="../../script/disease.js"></script>
+<script type="text/javascript" src="../../script/lib/pinyin_dict_firstletter.js"></script>
+<script type="text/javascript" src="../../script/lib/pinyinUtil.js"></script>
+<script type="text/javascript">
+    var s_h = window.screen.height;
+    //alert(s_h);
+    $('.brand_wrap').height(s_h - 115);
+    $('.brand').height(s_h - 115);
+    $('.illness_li').click(function (e) {
+        $(this).addClass('on').siblings().removeClass('on');
+    });
+    $('.brand .numA-Z a').on('click', function (event) {
+        event.preventDefault();
+        var $self = $(this),
+            navT = $self.text(),
+            $list = $self.closest('.brand').find('.brand_list');
+
+        $list.animate({
+            scrollTop: $list.find('.name:contains(' + navT + ')').prop('offsetTop')
+        }, 'fast');
+    });
+    $('.plus').click(function (e) {
+        $('.shadow').show();
+        $('.plus_sharecode').show();
+    });
+    $('.plus_sharecode .sure').click(function (e) {
+        var name = $('#new-disease-name').val();
+        if (name.length > 0) {
+            diseasePool.addDisease(name);
+            api.sendEvent({
+                name: 'selectDisease',
+                extra: {disease: name}
+            });
+            api.closeFrame({
+                name: api.frameName
+            });
+        }
+        $('.shadow').hide();
+
+    });
+    $('.plus_sharecode .cancel').click(function (e) {
+        $('.shadow').hide();
+    });
+
+
+    $('.list_cont').on("click", 'li', function (e) {
+        var disease = $(this).text();
+        api.sendEvent({
+            name: 'selectDisease',
+            extra: {disease: disease}
+        });
+        api.closeFrame({
+            name: api.frameName
+        });
+    });
+
+    $('#disease-search').on('change', function () {
+        var query = $(this).val();
+        var data = diseasePool.search(query);
+        loadDisease(data);
+    });
+
+    loadDisease(diseasePool.data);
+
+    function loadDisease(pool) {
+        var view = {};
+
+        for (var i = 0; i < pool.length; i++) {
+            var py = pinyinUtil.getFirstLetter(pool[i]).toUpperCase();
+            view[py[0]] = view[py[0]] || [];
+            view[py[0]].push(pool[i]);
+        }
+        $('.list_cont').empty();
+        for (var i in view) {
+            var data = view[i];
+
+            var html = "";
+
+            html += '<li class="name">' + i + '</li>';
+
+            for (var j = 0; j < data.length; j++) {
+                var name = data[j];
+                if (j == data.length - 1) {
+                    html += '<li class="no_border"><a href="#"><span>' + name + '</span></a></li>'
+                } else {
+                    html += '<li><a href="#"><span>' + name + '</span></a></li>'
+                }
+            }
+            $('.list_cont').append(html);
+        }
+    }
+
+    function goBack() {
+        api.closeFrame({
+            name: api.frameName
+        });
+    }
+
+    apiready = function () {
+        api.addEventListener({
+            name: 'goBack'
+        }, function (ret, err) {
+            console.log("in disease list back");
+            goBack();
+            api.sendEvent({
+                name: 'canBack'
+            });
+        });
+    }
+
+
+</script>

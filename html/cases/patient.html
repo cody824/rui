@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="viewport"
+          content="height=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+    <title>患者列表</title>
+    <link rel="stylesheet" href="../../css/common.css"/>
+    <link rel="stylesheet" href="../../css/style.css"/>
+    <script type="text/javascript" src="../../js/jquery-2.0.0.min.js"></script>
+</head>
+<body style="background:#efeff4;">
+<div class="password_modify">
+    <div class="regTop clear">
+        <span class="title">患者列表</span>
+        <a class="back" href="javascript:goBack()"></a>
+        <!--<span class="plus"></span>-->
+    </div>
+    <div class="content">
+        <div class="search_bar">
+            <input id="patient-search" type="search" placeholder="搜索">
+            <span class="search_icon"></span>
+        </div>
+        <div class="brand_wrap clearfix" style="position:fixed; z-index:90;">
+            <div class="brand">
+                <div class="brand_nav">
+                    <div class="brand_slide">
+                        <div class="numA-Z">
+                            <a href="javascript:void(0)" class="active">A</a> <a href="javascript:void(0)">B</a> <a
+                                href="javascript:void(0)">C</a> <a href="javascript:void(0)">D</a> <a
+                                href="javascript:void(0)">F</a> <a href="javascript:void(0)">G</a> <a
+                                href="javascript:void(0)">H</a> <a href="javascript:void(0)">J</a> <a
+                                href="javascript:void(0)">K</a> <a href="javascript:void(0)">L</a> <a
+                                href="javascript:void(0)">M</a> <a href="javascript:void(0)">N</a> <a
+                                href="javascript:void(0)">O</a> <a href="javascript:void(0)">Q</a> <a
+                                href="javascript:void(0)">R</a> <a href="javascript:void(0)">S</a> <a
+                                href="javascript:void(0)">T</a> <a href="javascript:void(0)">W</a> <a
+                                href="javascript:void(0)">X</a> <a href="javascript:void(0)">Y</a> <a
+                                href="javascript:void(0)">Z</a>
+                        </div>
+                    </div>
+                    <div class="brand_col">
+                        <div class="brand_list">
+                            <ul class="list_cont">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--弹出-->
+<div class="shadow">
+    <div class="sympton_msg plus_msg">
+        <p class="title">添加患者</p>
+        <div class="sympton_details">
+            <ul>
+                <li><a href="add_patient.html">手动添加</a></li>
+                <li>使用分享码</li>
+                <li>取消</li>
+            </ul>
+        </div>
+    </div>
+    <div class="modify_msg plus_sharecode">
+        <input type="text" placeholder="请输入分享码">
+        <button class="sure" type="button" style="margin-right:40px;">确定</button>
+        <button class="cancel" type="button">取消</button>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/app.js"></script>
+<script type="text/javascript" src="../../script/patient.js"></script>
+<script type="text/javascript" src="../../script/lib/pinyin_dict_firstletter.js"></script>
+<script type="text/javascript" src="../../script/lib/pinyinUtil.js"></script>
+<script type="text/javascript">
+    var s_h = window.screen.height;
+    //alert(s_h);
+    $('.brand_wrap').height(s_h - 115);
+    $('.brand').height(s_h - 115);
+    $('.illness_li').click(function (e) {
+        $(this).addClass('on').siblings().removeClass('on');
+    });
+    $('.brand .numA-Z a').on('click', function (event) {
+        event.preventDefault();
+        var $self = $(this),
+            navT = $self.text(),
+            $list = $self.closest('.brand').find('.brand_list');
+        $list.animate({
+            scrollTop: $list.find('.name:contains(' + navT + ')').prop('offsetTop')
+        }, 'fast');
+    });
+
+    $('.list_cont').on("click", 'li', function (e) {
+        var patientName = $(this).text();
+        var patientId = $(this).attr('data-patientId');
+        api.sendEvent({
+            name: 'selectPatient',
+            extra: {patientName: patientName, patientId: patientId}
+        });
+        api.closeFrame({
+            name: api.frameName
+        });
+    });
+
+    $('#patient-search').on('change', function () {
+        var query = $(this).val();
+        var data = patientCache.search(appConfig.user, id, query);
+        loadPatient(data);
+    });
+
+    loadPatient(patientCache.search(appConfig.user.id));
+
+    function loadPatient(pool) {
+        var view = {};
+        for (var i = 0; i < pool.length; i++) {
+            var py = pinyinUtil.getFirstLetter(pool[i].patientName).toUpperCase();
+            view[py[0]] = view[py[0]] || [];
+            view[py[0]].push(pool[i]);
+        }
+        $('.list_cont').empty();
+
+        for (var i = 0; i < 26; i++) {
+            var a = String.fromCharCode(65 + i);
+            var data = view[a];
+            if (data && data.length > 0) {
+                var html = "";
+
+                html += '<li class="name">' + a + '</li>';
+
+                for (var j = 0; j < data.length; j++) {
+                    var name = data[j].patientName;
+                    if (j == data.length - 1) {
+                        html += '<li class="no_border" data-patientId="' + data[j].id + '"><a href="#"><span>' + name + '</span></a></li>'
+                    } else {
+                        html += '<li data-patientId="' + data[j].id + '"><a href="#"><span>' + name + '</span></a></li>'
+                    }
+                }
+                $('.list_cont').append(html);
+            }
+        }
+    }
+
+    function goBack() {
+        api.closeFrame({
+            name: api.frameName
+        });
+    }
+
+    apiready = function () {
+        api.addEventListener({
+            name: 'goBack'
+        }, function (ret, err) {
+            console.log("in patient list back");
+            goBack();
+            api.sendEvent({
+                name: 'canBack'
+            });
+        });
+    }
+
+</script>

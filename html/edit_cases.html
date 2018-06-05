@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="viewport"
+          content="height=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+    <title>添加病例</title>
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/style.css"/>
+    <link rel="stylesheet" href="../css/swiper.min.css">
+    <style>
+        .swiper-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .swiper-slide {
+            text-align: center;
+            font-size: 18px;
+            background: #fff;
+
+            /* Center slide text vertically */
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            -webkit-justify-content: center;
+            justify-content: center;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+            width: 45%;
+        }
+
+        .add-image {
+            background: #ddd url(../images/add.png) no-repeat center center;
+            background-size: 45%;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    <script type="text/javascript" src="../js/jquery-2.0.0.min.js"></script>
+    <script type="text/javascript" src="../js/swiper.min.js"></script>
+</head>
+<body>
+<div class="account_info">
+    <div class="regTop"><span id="win-title" class="title">添加病例</span> <a class="back"
+                                                                          href="javascript:goBack()"></a><span
+            id="share-span" class="edit share" style="display: none"></span></div>
+    <div class="content" style="padding-bottom:0;">
+        <div class="add_cases_wrap">
+            <div class="add_cases">
+                <div style="position: fixed;width: 60%;height: 120px;display:inline; ">
+                    <div class="swiper-container">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide empty"><img src="../images/noimage.jpg"></div>
+                        </div>
+                    </div>
+                </div>
+                <div style="width: 40%;display:inline;float: right;height:  120px;">
+                    <div class="add-image"></div>
+                </div>
+            </div>
+            <form id="cases-form" class="patient_form">
+                <div class="message" style="padding-bottom:20px;">
+                    <div class="message_line">
+                        <label>患者</label>
+                        <input name="patientName" type="text" placeholder="选择患者" readonly required>
+                        <input name="patientId" type="hidden" readonly>
+                        <a id="select-patient-a" class="list_opr sympton_opr" href="javascript:selectPatient()"></a>
+                    </div>
+                    <div class="message_line">
+                        <label>疾病</label>
+                        <input name="disease" class="sympton_location" type="text" placeholder="选择疾病" required/>
+                        <a class="list_opr sympton_opr" href="javascript:selectDisease()"></a>
+                    </div>
+                    <div class="message_line">
+                        <label>症状位置</label>
+                        <input name="bodyParts" type="text" placeholder="点击选择症状位置" required/>
+                        <a class="list_opr sympton_opr" href="javascript:selectBodyParts()"></a>
+                    </div>
+
+                    <div class="message_line">
+                        <label>就诊时间</label>
+                        <input name="visitTime" class="sympton_time" type="datetime-local" value="" required/>
+                    </div>
+                    <div class="message_line">
+                        <label>病程</label>
+                        <input name="course" class="sympton" type="text" placeholder="点击选择大致时间" required/>
+                        <a class="list_opr sympton_opr" href="javascript:selectCourse()"></a>
+                    </div>
+                    <div class="message_line">
+                        <label>医生建议</label>
+                    </div>
+                    <textarea name="advise" class="sympton_textarea"></textarea>
+                </div>
+                <button type="submit" class="submit" style="background:#ff9966; margin-top:6%;">完成添加</button>
+            </form>
+        </div>
+        <div class="sympton_msg picture_type">
+            <p class="title">照片类型</p>
+            <div class="sympton_details">
+                <ul>
+                    <li><a href="camera.html">环境照片</a></li>
+                    <li><a href="camera.html">细节照片</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function stopPropagation(e) {
+        var ev = e || window.event;
+        if (ev.stopPropagation) {
+            ev.stopPropagation();
+        }
+        else if (window.event) {
+            window.event.cancelBubble = true;//兼容IE
+        }
+    }
+
+    var s_h = window.screen.height;
+    //alert(s_h);
+    $('.add_cases_wrap').height(s_h - 75);
+    $('.add-image').on('click', function () {
+        gotoCamera(loadCases());
+    });
+
+    $('#share-span').on('click', function () {
+        var sharedModule = api.require('shareAction');
+
+        if (editCases.shareCode) {
+            var shareMsg = appConfig.user.fullName + "给您分享了患者" + patient.patientName + "的病例，请通过分享码" + editCases.shareCode + "在app中查看";
+            sharedModule.share({
+                text: shareMsg,
+                type: 'text'
+            });
+        } else {
+            api.confirm({
+                title: '提示',
+                msg: '分享病例需要上传，确认上传吗？',
+                buttons: ["确定", "取消"]
+            }, function (ret, err) {
+                if (ret.buttonIndex == 1) {
+                    casesPool.upload(loadCases(), function (cases) {
+                        api.sendEvent({
+                            name: 'loadCases'
+                        });
+                        var shareMsg = appConfig.user.fullName + "给您分享了患者" + patient.patientName + "的病例，请通过分享码[" + cases.shareCode + "]在app中查看";
+                        sharedModule.share({
+                            text: shareMsg,
+                            type: 'text'
+                        });
+                    });
+                }
+            });
+        }
+    })
+</script>
+</body>
+</html>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/app.js"></script>
+<script type="text/javascript" src="../script/user.js"></script>
+<script type="text/javascript" src="../script/patient.js"></script>
+<script type="text/javascript" src="../script/cases.js"></script>
+<script type="text/javascript" src="../script/navi.js"></script>
+<script type="text/javascript">
+    var patient;
+    var editCases;
+    var photo;
+    var swiper;
+    var images = [];
+    var photoBrowser;
+    var canBack = true;
+
+    document.getElementById('cases-form').addEventListener('submit', function (e) {
+        var cases = loadCases();
+        var now = new Date();
+        cases.images = images;
+        if (editCases) {
+            casesPool.update(cases);
+        } else {
+            cases.id = patient.id + "-" + now.getTime();
+            casesPool.add(cases);
+        }
+        api.closeWin();
+        gotoPatientCases(patient);
+        e.preventDefault();
+    }, false);
+
+    function loadCases() {
+        var cases = editCases || {};
+        cases.patientName = $('input[name=patientName]').val();
+        cases.patientId = $('input[name=patientId]').val();
+        cases.disease = $('input[name=disease]').val();
+        cases.bodyParts = $('input[name=bodyParts]').val();
+        cases.visitTime = $('input[name=visitTime]').val();
+        cases.course = $('input[name=course]').val();
+        cases.advise = $('textarea[name=advise]').val();
+        return cases;
+    }
+
+
+    apiready = function () {
+        patient = api.pageParam.patient;
+        editCases = api.pageParam.cases;
+        photo = api.pageParam.imagePath;
+        if (patient) {
+            $api.val($api.dom('input[name=patientName]'), patient.patientName);
+            $api.val($api.dom('input[name=patientId]'), patient.id);
+            $('#select-patient-a').hide();
+        }
+        if (editCases) {
+            $('#share-span').show();
+            $('input[name=patientName]').val(editCases.patientName);
+            $('input[name=patientId]').val(editCases.patientId);
+            $('input[name=disease]').val(editCases.disease);
+            $('input[name=bodyParts]').val(editCases.bodyParts);
+            var visitTime = new Date(editCases.visitTime);
+            $('input[name=visitTime]').val(visitTime.Format('yyyy-MM-ddThh:mm'));
+            $('input[name=course]').val(editCases.course);
+            $('textarea[name=advise]').val(editCases.advise);
+            $('button[type=submit]').text("修改保存");
+            if (editCases.images && editCases.images.length > 0) {
+                $('.swiper-wrapper').empty();
+                var swHtml = "";
+                for (var i = 0; i < editCases.images.length; i++) {
+                    swHtml += '<div class="swiper-slide"><img src="' + editCases.images[i] + '" width="100%" height="100%"></div>'
+                }
+                images = editCases.images;
+                $('.swiper-wrapper').append(swHtml);
+            }
+            $('#win-title').text("编辑病例");
+        }
+        if (photo) {
+            $('.swiper-wrapper').empty();
+            var swHtml = "";
+            var swHtml = '<div class="swiper-slide"><img src="' + photo + '" width="100%" height="100%"></div>';
+            images.push(photo);
+            $('.swiper-wrapper').append(swHtml);
+        }
+
+        api.addEventListener({
+            name: 'selectDisease'
+        }, function (ret, err) {
+            $api.val($api.dom('input[name=disease]'), ret.value.disease);
+            canBack = true;
+        });
+
+        api.addEventListener({
+            name: 'selectBodyParts'
+        }, function (ret, err) {
+            $api.val($api.dom('input[name=bodyParts]'), ret.value.bodyParts);
+        });
+
+        api.addEventListener({
+            name: 'selectCourse'
+        }, function (ret, err) {
+            $api.val($api.dom('input[name=course]'), ret.value.course);
+            canBack = true;
+        });
+
+
+        api.addEventListener({
+            name: 'selectPatient'
+        }, function (ret, err) {
+            $api.val($api.dom('input[name=patientName]'), ret.value.patientName);
+            $api.val($api.dom('input[name=patientId]'), ret.value.patientId);
+            patient = patientCache.get(appConfig.user.id, ret.value.patientId);
+            canBack = true;
+        });
+
+        api.addEventListener({
+            name: 'addImage'
+        }, function (ret, err) {
+            if ($('.swiper-wrapper .empty').length > 0) {
+                swiper.removeAllSlides()
+            }
+            images.unshift(ret.value.imagePath);
+            swiper.prependSlide('<div class="swiper-slide"><img src="' + ret.value.imagePath + '" width="100%" height="100%"></div>');
+            swiper.slideTo(0, 1000, false);
+            canBack = true;
+        });
+
+        api.addEventListener({
+            name: 'deleteImage'
+        }, function (ret, err) {
+            api.confirm({
+                title: '提示',
+                msg: '确认要删除图片吗？',
+                buttons: ["确定", "取消"]
+            }, function (ret, err) {
+                if (ret.buttonIndex == 1) {
+                    photoBrowser.getIndex(function (ret, err) {
+                        if (ret) {
+                            console.log(JSON.stringify(ret));
+                            images.splice(ret.index, 1);
+                            swiper.removeSlide(ret.index);
+
+                            photoBrowser.getImage(ret, function (image) {
+                                var fs = api.require('fs');
+                                fs.remove({
+                                    path: image.path
+                                }, function (ret, err) {
+                                    if (ret.status) {
+                                        console.log(JSON.stringify(ret));
+                                    } else {
+                                        alert(JSON.stringify(err));
+                                    }
+                                });
+                                photoBrowser.deleteImage(ret);
+                            })
+                        } else {
+                            console.log(JSON.stringify(err));
+                        }
+                    });
+                }
+            });
+
+        });
+
+        api.addEventListener({
+            name: 'keyback'
+        }, function (ret, err) {
+            api.sendEvent({
+                name: 'goBack'
+            });
+        });
+
+        api.addEventListener({
+            name: 'goBack'
+        }, function (ret, err) {
+            if (photoBrowser) {
+                photoBrowser.close();
+                api.closeFrame({
+                    name: 'deleteImageBtn'
+                });
+                api.closeFrame({
+                    name: 'closeViewBtn'
+                });
+                photoBrowser = null;
+                canBack = true;
+            } else {
+                if (canBack) {
+                    goBack();
+                }
+            }
+        });
+
+        api.addEventListener({
+            name: 'closeImageView'
+        }, function (ret, err) {
+            photoBrowser.close();
+            api.closeFrame({
+                name: 'deleteImageBtn'
+            });
+            api.closeFrame({
+                name: 'closeViewBtn'
+            });
+            photoBrowser = null;
+            canBack = true;
+        });
+
+        api.addEventListener({
+            name: 'canBack'
+        }, function (ret, err) {
+            canBack = true;
+        });
+
+        swiper = new Swiper('.swiper-container', {
+            slidesPerView: 1,
+            spaceBetween: 20,
+            on: {
+                click: function (e) {
+                    if (e.target.src.indexOf('/images/noimage.jpg') > 0) {
+                        return;
+                    }
+                    var activeIndex = 0;
+                    for (var i = 0; i < images.length; i++) {
+                        if (e.target.src == images[i]) {
+                            activeIndex = i;
+                            break;
+                        }
+                    }
+                    canBack = false;
+                    photoBrowser = api.require('photoBrowser');
+                    photoBrowser.open({
+                        images: images,
+                        activeIndex: activeIndex,
+                        bgColor: '#000'
+                    }, function (ret, err) {
+                        if (!ret) {
+                            console.log(JSON.stringify(err));
+                        }
+                    });
+
+                    setTimeout(function () {
+                        api.openFrame({
+                            name: 'deleteImageBtn',
+                            url: 'image/delete.html',
+                            rect: {
+                                x: api.frameWidth - 60,
+                                y: 20,
+                                w: 40,
+                                h: 40
+                            },
+                            bounces: false,
+                            vScrollBarEnabled: false,
+                            hScrollBarEnabled: false
+                        });
+                        api.openFrame({
+                            name: 'closeViewBtn',
+                            url: 'image/goBack.html',
+                            rect: {
+                                x: 30,
+                                y: 20,
+                                w: 40,
+                                h: 40
+                            },
+                            bounces: false,
+                            vScrollBarEnabled: false,
+                            hScrollBarEnabled: false
+                        });
+                    }, 1000)
+                },
+            }
+        });
+    }
+
+    function selectDisease() {
+        canBack = false;
+        api.openFrame({
+            name: 'disease_list',
+            url: 'cases/disease_list.html',
+            pageParam: {
+                patient: patient
+            }
+        });
+    }
+
+    function selectBodyParts() {
+        if (!patient) {
+            alert("请选择病人");
+            return;
+        }
+
+        canBack = false;
+        api.openFrame({
+            name: 'bodyParts',
+            url: 'cases/body.html',
+            pageParam: {
+                patient: patient
+            }
+        });
+    }
+
+    function selectCourse() {
+        canBack = false;
+        api.openFrame({
+            name: 'course',
+            url: 'cases/course.html',
+            pageParam: {
+                patient: patient
+            }
+        });
+    }
+
+
+    function selectPatient() {
+        canBack = false;
+        api.openFrame({
+            name: 'patient',
+            url: 'cases/patient.html',
+            pageParam: {
+                patient: patient
+            }
+        });
+    }
+
+    function goBack() {
+        if (api.pageParam.patient) {
+            gotoPatientCases(patient, "addCases", "curl")
+        } else {
+            gotoMain();
+        }
+
+    }
+
+
+</script>

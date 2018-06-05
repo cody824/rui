@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>APP</title>
+</head>
+<link rel="stylesheet" href="../../css/style.css"/>
+<style type="text/css">
+    body {
+        background: transparent;
+        padding: 0;
+        margin: 0;
+    }
+
+    img {
+        border: none;
+    }
+</style>
+<body>
+<span id="take-photo" class="take_photo"></span>
+<!--<img id="take-photo" src="../../images/camera01_pressed.png" width="80" height="80">-->
+</body>
+</html>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/app.js"></script>
+<script type="text/javascript" src="../../script/navi.js"></script>
+<script>
+    $api.addEvt($api.dom("#take-photo"), 'click', function () {
+        api.sendEvent({
+            name: 'takePhoto'
+        });
+    });
+
+</script>

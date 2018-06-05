@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="viewport" content="height=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+    <title>设置</title>
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/style.css"/>
+    <script type="text/javascript" src="../js/jquery-2.0.0.min.js"></script>
+</head>
+<body>
+    <div class="password_modify">
+        <div class="regTop">
+            <span class="title">RUI</span>
+        </div>
+        <div class="content">
+            <div class="content_setting">
+                <form action="">
+                <div class="account_set">
+                    <div class="message">
+                        <a class="message_line" style="margin:0 auto;" href="account_info.html">
+                            <label class="setting">账户设置</label>
+                            <span class="enter"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="message" style="padding-top:7px;">
+                    <div class="message_line special">
+                    	<label>手机号</label>
+                        <input name="mobile" type="tel" value="" readonly>
+                    </div>
+                    <div class="message_line special" style="border-bottom:none;">
+                    	<label>用户名</label>
+                        <input name="nick" type="text" value="万能的张三" readonly/>
+                    </div>
+                </div>
+                    <!--<div class="switch">-->
+                    <!--<span class="text">自动登录</span>-->
+                    <!--<div class="on_off">-->
+                    <!--<span class="on"></span>-->
+                    <!--</div>-->
+                    <!--</div>-->
+
+                <div class="account_set">
+                    <div class="message">
+                        <span class="clear">定时清理</span>
+                    </div>
+                </div>
+                <div class="message" style="padding-top:7px;">
+                    <div class="switch" style="margin-top:0;">
+                        <span class="text">开启定时清理</span>
+                        <div class="on_off">
+                            <span id="auto-clean-switch" class="on"></span>
+                        </div>
+                    </div>
+                    <div class="message_line special" style="border-bottom:none;">
+                    	<label>清理周期</label>
+                        <input class="period" type="text" value="90天" readonly/>
+                    </div>
+                    <div class="sympton_msg period_msg">
+                        <p class="title">清理周期</p>
+                        <div class="sympton_details">
+                            <ul>
+                                <li data-day="7"><span>7</span>天</li>
+                                <li data-day="30"><span>30</span>天</li>
+                                <li data-day="60"><span>60</span>天</li>
+                                <li data-day="90" class="checked"><span>90</span>天</li>
+                                <li data-day="120"><span>120</span>天</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="message copyrights">
+                	<div class="message_line">
+                        <label>软件版本</label>
+                        <input name="version" type="text" value="" style="background:none;" readonly/>
+                    </div>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+    <div class="menu_wrap">
+        <div class="menu clearfix">
+            <div class="menu_section one ">
+                <div class="menu_section_name">
+                    <a href="javascript:gotoMain()">患者</a>
+                </div>
+            </div>
+            <div class="menu_section two">
+                <div class="menu_section_name">
+                    <a href="javascript:gotoCamera()">拍照</a>
+                </div>
+            </div>
+            <div class="menu_section three">
+                <div class="menu_section_name">
+                    <a href="javascript:gotoPhoto()">照片</a>
+                </div>
+            </div>
+            <div class="menu_section four checked">
+                <div class="menu_section_name">
+                    <a href="javascript:gotoSetup()">设置</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    function stopPropagation(e) {
+        var ev = e || window.event;
+        if (ev.stopPropagation) {
+            ev.stopPropagation();
+        }
+        else if (window.event) {
+            window.event.cancelBubble = true;//兼容IE
+        }
+    }
+
+    var s_h = window.screen.height;
+    //alert(s_h);
+    $('.content_setting').height(s_h - 129);
+    $('.switch .on_off span').click(function (e) {
+        var bool = $(this).hasClass('on');
+        if (bool) {
+            $(this).removeClass('on').addClass('off');
+        } else {
+            $(this).removeClass('off').addClass('on');
+        }
+    });
+    $('.period').click(function (e) {
+        $('.period_msg').show();
+        stopPropagation(e);
+    });
+    $('.period_msg ul li').click(function (e) {
+        stopPropagation(e);
+        $(this).addClass('checked').siblings().removeClass('checked');
+        $('.sympton_msg').hide();
+        var li_txt = $(this).text();
+        $('.period').val(li_txt);
+        appConfig.cleanPeriod = $(this).attr('data-day');
+        saveAppConfig();
+    });
+</script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/app.js"></script>
+<script type="text/javascript" src="../script/user.js"></script>
+<script type="text/javascript" src="../script/navi.js"></script>
+<script type="text/javascript">
+
+
+    $api.addEvt($api.dom('#auto-clean-switch'), 'click', function () {
+        if (appConfig.disableAutoClean) {
+            appConfig.disableAutoClean = false;
+        } else {
+            appConfig.disableAutoClean = true;
+        }
+        saveAppConfig();
+    });
+    var cleanPeriod = appConfig.cleanPeriod || 90;
+
+
+    $("li[data-day=" + cleanPeriod + "]").addClass('checked').siblings().removeClass('checked');
+    $('.period').val(cleanPeriod + "天");
+
+    apiready = function () {
+        $api.val($api.dom('input[name=mobile]'), appConfig.user.mobile);
+        $api.val($api.dom('input[name=nick]'), appConfig.user.nick);
+        $api.val($api.dom('input[name=version]'), 'V' + api.appVersion);
+
+        if (appConfig.disableAutoClean) {
+            $api.removeCls($api.dom('#auto-clean-switch'), 'on');
+            $api.addCls($api.dom('#auto-clean-switch'), 'off');
+        }
+    }
+    
+    
+</script>

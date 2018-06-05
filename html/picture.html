@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="viewport" content="height=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+<title>照片</title>
+<link rel="stylesheet" href="../css/common.css"/>
+<link rel="stylesheet" href="../css/style.css"/>
+    <script type="text/javascript" src="../js/jquery-2.0.0.min.js"></script>
+</head>
+<body style="background:#fff;">
+<div class="password_modify">
+  <div class="regTop"> <span class="title">RUI</span> <a class="edit filter" href="#">筛选</a> </div>
+    <div class="content">
+        <div class="picture_labels">
+    </div>
+  </div>
+</div>
+<div class="sympton_msg choose">
+  <p class="title">筛选条件</p>
+  <div class="sympton_details">
+    <ul>
+      <li class="filter_time">按时间</li>
+      <li class="filter_name">按患者</li>
+    </ul>
+  </div>
+</div>
+<div class="menu_wrap">
+    <div class="menu clearfix">
+        <div class="menu_section one ">
+            <div class="menu_section_name">
+                <a href="javascript:gotoMain()">患者</a>
+            </div>
+        </div>
+        <div class="menu_section two">
+            <div class="menu_section_name">
+                <a href="javascript:gotoCamera()">拍照</a>
+            </div>
+        </div>
+        <div class="menu_section three checked">
+            <div class="menu_section_name">
+                <a href="javascript:gotoPhoto()">照片</a>
+            </div>
+        </div>
+        <div class="menu_section four">
+            <div class="menu_section_name">
+                <a href="javascript:gotoSetup()">设置</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/app.js"></script>
+<script type="text/javascript" src="../script/user.js"></script>
+<script type="text/javascript" src="../script/patient.js"></script>
+<script type="text/javascript" src="../script/cases.js"></script>
+<script type="text/javascript" src="../script/navi.js"></script>
+<script type="text/javascript">
+    var s_h = window.screen.height;
+    //alert(s_h);
+    $('.picture_labels').height(s_h - 129);
+		
+		$('.filter').click(function(e) {
+            $('.sympton_msg.choose').show(); 
+        });
+		$('.filter_time').click(function(e) {
+            $('.sympton_msg.choose').hide();
+            loadByTime();
+        });$('.sympton_details ul .filter_name').click(function(e) {
+			$('.sympton_msg.choose').hide();
+        loadByPatient();
+    });
+
+    var photoBrowser;
+
+    $('.picture_labels').on('click', '.photo img', function () {
+        var index = $(this).attr('data-index');
+        var img = allImageObj[index];
+        photoBrowser = api.require('photoBrowser');
+        photoBrowser.open({
+            images: allImage,
+            activeIndex: index,
+            bgColor: '#000'
+        }, function (ret, err) {
+            if (ret) {
+                if (ret.eventType == "change") {
+                    img = allImageObj[ret.index];
+                    api.sendEvent({
+                        name: 'infoChange',
+                        extra: {
+                            patientName: img.cases.patientName,
+                            disease: img.cases.disease
+                        }
+                    });
+                }
+            } else {
+                console.log(JSON.stringify(err));
+            }
+        });
+
+        setTimeout(function () {
+            api.openFrame({
+                name: 'closeViewBtn',
+                url: 'image/goBack.html',
+                rect: {
+                    x: 30,
+                    y: 20,
+                    w: 40,
+                    h: 40
+                },
+                pageParam: {
+                    closeEvent: 'closeForPicture'
+                },
+                bounces: false,
+                vScrollBarEnabled: false,
+                hScrollBarEnabled: false
+            });
+            api.openFrame({
+                name: 'imageInfo',
+                url: 'image/info.html',
+                rect: {
+                    x: 30,
+                    y: api.frameHeight - 20,
+                    // w: 40,
+                    h: 40
+                },
+                pageParam: {
+                    patientName: img.cases.patientName,
+                    disease: img.cases.disease
+                },
+                bounces: false,
+                vScrollBarEnabled: false,
+                hScrollBarEnabled: false
+            });
+        }, 1000)
+    });
+
+    var allImage = [];
+    var allImageObj = [];
+
+
+    apiready = function () {
+        loadByPatient();
+        api.addEventListener({
+            name: 'closeForPicture'
+        }, function (ret, err) {
+            photoBrowser.close();
+            api.closeFrame({
+                name: 'closeViewBtn'
+            });
+            api.closeFrame({
+                name: 'imageInfo'
+            });
+            photoBrowser = null;
+        });
+
+        api.addEventListener({
+            name: 'keyback'
+        }, function (ret, err) {
+            if (photoBrowser) {
+                photoBrowser.close();
+                api.closeFrame({
+                    name: 'closeViewBtn'
+                });
+                api.closeFrame({
+                    name: 'imageInfo'
+                });
+                photoBrowser = null;
+                canBack = true;
+            } else {
+                gotoMain();
+            }
+        });
+    }
+
+    function loadByPatient() {
+        var patients = patientCache.search(appConfig.user.id);
+        $('.picture_labels').empty();
+        var index = 0;
+        for (var i = 0; i < patients.length; i++) {
+            var patient = patients[i];
+            var casesList = casesPool.data[patient.id];
+            var images = [];
+            for (var j = 0; j < casesList.length; j++) {
+                var cases = casesList[j];
+                if (cases.images) {
+                    for (var l = 0; l < cases.images.length; l++) {
+                        var image = {
+                            src: cases.images[l]
+                        }
+                        image.cases = cases;
+                        image.index = index++;
+                        images.push(image);
+                        allImage.push(image.src);
+                        allImageObj.push(image);
+                    }
+                }
+            }
+            if (images.length > 0) {
+                $('.picture_labels').append(buildHtml(patient.patientName, images))
+            }
+        }
+    }
+
+    function loadByTime() {
+        var patients = patientCache.search(appConfig.user.id);
+        $('.picture_labels').empty();
+        var index = 0;
+        var timePool = {};
+        for (var i = 0; i < patients.length; i++) {
+            var patient = patients[i];
+            var casesList = casesPool.data[patient.id];
+            for (var j = 0; j < casesList.length; j++) {
+                var cases = casesList[j];
+                var time = new Date(cases.visitTime);
+                var day = time.getFullYear() + "-" + (time.getMonth() + 1) + "-" + time.getDate();
+                timePool[day] = timePool[day] || [];
+                timePool[day].push(cases);
+            }
+        }
+        var days = Object.keys(timePool).sort();
+        for (var i = 0; i < days.length; i++) {
+            var day = days[i];
+            var casesList = timePool[day];
+            var images = [];
+            for (var j = 0; j < casesList.length; j++) {
+                var cases = casesList[j];
+                if (cases.images) {
+                    for (var l = 0; l < cases.images.length; l++) {
+                        var image = {
+                            src: cases.images[l]
+                        }
+                        image.cases = cases;
+                        image.index = index++;
+                        images.push(image);
+                        allImage.push(image.src);
+                        allImageObj.push(image);
+                    }
+                }
+            }
+            if (images.length > 0) {
+                $('.picture_labels').append(buildHtml(day, images))
+            }
+        }
+    }
+
+    function buildHtml(title, images) {
+        var html = '<div class="label_lists">\n' +
+            '          <h4>' + title + '</h4>\n' +
+            '          <div class="picture_list">\n' +
+            '            <ul>\n' +
+            '              <li> \n';
+        for (var i = 0; i < images.length; i++) {
+            html += '                  <div class="picture_details">\n' +
+                '                    <span class="photo"><img data-index="' + images[i].index + '" src="' + images[i].src + '" width="100%" height="100%"></span>\n' +
+                '                    <div class="text"><span class="name">' + images[i].cases.patientName + '</span><span class="illness">' + images[i].cases.disease + '</span></div>\n' +
+                '                  </div>\n';
+        }
+
+        html += '              </li>\n' +
+            '            </ul>\n' +
+            '          </div>\n' +
+            '        </div>';
+        return html;
+    }
+        
+</script>

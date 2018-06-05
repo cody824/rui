@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="viewport"
+          content="height=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+    <title>拍照</title>
+    <style type="text/css">
+        body {
+            background: transparent;
+            padding: 0;
+            margin: 0;
+        }
+
+        img {
+            border: none;
+            display: table;
+        }
+    </style>
+</head>
+<body>
+</body>
+</html>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script>
+
+    apiready = function () {
+        if (api.pageParam.maxZoom > 1) {
+            var uislider = api.require('UISlider');
+            uislider.open({
+                animation: true,
+                orientation: 'vertical',
+                rect: {
+                    x: 20,
+                    y: 60,
+                    size: 200
+                },
+                bubble: {
+                    // direction: 'bottom',
+                    state: 'hide',
+                    // w: 160,
+                    h: 60,
+                    size: 12,
+                    color: '#888',
+                    // bg: 'widget://images/bubble.png',
+                    prefix: '焦距：',
+                    suffix: 'X'
+                },
+                handler: {
+                    w: 20,
+                    h: 20,
+                    bg: 'widget://images/point.png'
+                },
+                bar: {
+                    h: 5,
+                    bg: '#fff',
+                    active: '#00cccc'
+                },
+                value: {
+                    min: 1,
+                    max: api.pageParam.maxZoom,
+                    step: 1,
+                    init: 1
+                },
+                fixedOn: api.frameName,
+                fixed: false
+            }, function (ret, err) {
+                api.sendEvent({
+                    name: 'setZoom',
+                    extra: {zoom: ret.value}
+                });
+            });
+        }
+    }
+
+</script>

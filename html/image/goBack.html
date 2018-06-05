@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="viewport"
+          content="height=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+    <title>拍照</title>
+    <style type="text/css">
+        body {
+            background: transparent;
+            padding: 0;
+            margin: 0;
+        }
+
+        img {
+            border: none;
+            display: table;
+        }
+    </style>
+</head>
+<body>
+<img id="close-view" src="../../images/back.png" width="32" height="32"></img>
+</body>
+</html>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script>
+    $api.addEvt($api.dom("#close-view"), 'click', function () {
+        api.sendEvent({
+            name: event
+        });
+    });
+    var event = 'closeImageView';
+
+    apiready = function () {
+        event = api.pageParam.closeEvent || 'closeImageView';
+    }
+
+</script>

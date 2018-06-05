@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="viewport"
+          content="height=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+    <title>病程</title>
+    <link rel="stylesheet" href="../../css/common.css"/>
+    <link rel="stylesheet" href="../../css/style.css"/>
+    <script type="text/javascript" src="../../js/jquery-2.0.0.min.js"></script>
+</head>
+<body>
+<div class="password_modify">
+    <div class="regTop">
+        <span class="title">病程</span>
+        <a class="back" href="javascript:goBack()"></a>
+        <a class="edit finish" href="javascript:save()">完成</a>
+    </div>
+    <div class="content">
+        <div class="illness_lists">
+            <ul class="illness_ul">
+                <li class="illness_li">
+                    <span class="checkbox"></span>
+                    <span class="text">今天</span>
+                </li>
+                <li class="illness_li">
+                    <span class="checkbox"></span>
+                    <span class="text">三天内</span>
+                </li>
+                <li class="illness_li">
+                    <span class="checkbox"></span>
+                    <span class="text">一周</span>
+                </li>
+                <li class="illness_li">
+                    <span class="checkbox"></span>
+                    <span class="text">半个月</span>
+                </li>
+                <li class="illness_li">
+                    <span class="checkbox"></span>
+                    <span class="text">一个月</span>
+                </li>
+                <li class="illness_li">
+                    <span class="checkbox"></span>
+                    <span class="text">半年左右</span>
+                </li>
+                <li class="illness_li">
+                    <span class="checkbox"></span>
+                    <span class="text">一年左右</span>
+                </li>
+                <li class="illness_li">
+                    <span class="checkbox"></span>
+                    <span class="text">两年左右</span>
+                </li>
+                <li class="illness_li">
+                    <span class="checkbox"></span>
+                    <span class="text">三年以上</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+    var s_h = window.screen.height;
+    //alert(s_h);
+    $('.illness_lists').height(s_h - 65);
+    $('.illness_li').click(function (e) {
+        $(this).addClass('on').siblings().removeClass('on');
+    });
+
+    function goBack() {
+        api.closeFrame({
+            name: api.frameName
+        });
+    }
+
+    function save() {
+        var $selected = $('.illness_li.on');
+        if ($selected.length > 0) {
+            api.sendEvent({
+                name: 'selectCourse',
+                extra: {course: $selected.eq(0).find('span').text()}
+            });
+            api.closeFrame({
+                name: api.frameName
+            });
+        }
+    }
+
+    apiready = function () {
+        api.addEventListener({
+            name: 'goBack'
+        }, function (ret, err) {
+            goBack();
+            api.sendEvent({
+                name: 'canBack'
+            });
+        });
+    }
+</script>

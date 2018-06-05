@@ -1,0 +1,172 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" href="../../css/common.css"/>
+    <link rel="stylesheet" href="../../css/style.css"/>
+    <style type="text/css">
+        html {
+            background-color: white;
+        }
+
+        header {
+            border-bottom: 1px solid #ccc;
+            padding: 25px 0;
+        }
+
+        span {
+            padding: 10px 15px;
+            margin: 10px;
+            display: inline-block;
+            background-color: #e8e8e8;
+        }
+
+        .hover {
+            opacity: .4;
+        }
+    </style>
+</head>
+<body>
+<div class="main">
+
+</div>
+<div class="menu_wrap">
+    <div class="menu clearfix">
+        <div class="menu_section cut01 checked">
+            <div class="menu_section_name">
+                <a href="javascript:fnSave()">保存</a>
+            </div>
+        </div>
+        <div class="menu_section cut02">
+            <div class="menu_section_name">
+                <a href="javascript:fnClose()">重拍</a>
+            </div>
+        </div>
+        <div class="menu_section cut03">
+            <div class="menu_section_name">
+                <a href="javascript:fnReset()">重置</a>
+            </div>
+        </div>
+        <div class="menu_section cut04">
+            <div class="menu_section_name">
+                <a href="javascript:fnCloseToMain()">取消</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/app.js"></script>
+<script type="text/javascript">
+
+    var FNImageClip;
+    var cases;
+    apiready = function () {
+        FNImageClip = api.require('FNImageClip');
+        fnOpen(api.pageParam.imagePath);
+        cases = api.pageParam.cases;
+    };
+
+    function fnOpen(src) {
+        FNImageClip.open({
+            rect: {
+                x: 0,
+                y: 0,
+                w: api.winWidth,
+                h: api.winHeight - document.querySelector('.menu_wrap').offsetHeight
+            },
+            srcPath: src,
+            // highDefinition: true,
+            style: {
+                mask: 'rgba(55,55,55,0.3)',
+                clip: {
+                    w: api.winWidth - 20,
+                    h: api.winHeight - document.querySelector('.menu_wrap').offsetHeight - 20,
+                    x: 10,
+                    y: 10,
+                    borderColor: '#0f0',
+                    borderWidth: 1,
+                    appearance: 'rectangle'
+                }
+            }
+        }, function (ret, err) {
+            if (!ret) {
+                console.log(JSON.stringify(err));
+            }
+        });
+    }
+
+    function fnSave() {
+        api.showProgress({
+            style: 'default',
+            animationType: 'fade',
+            title: '保存中',
+            text: '请稍候',
+            modal: true
+        });
+
+        var now = new Date();
+        path = "tmp" + "/" + now.getTime() + ".png";
+        var fs = api.require('fs');
+        if (cases) {
+            path = cases.patientId + "/" + now.Format("yyyy-MM-dd") + "/" + now.getTime() + ".png";
+        }
+
+        FNImageClip.save({
+            destPath: 'fs://cases/' + path,
+            copyToAlbum: false,
+            quality: 1
+        }, function (ret, err) {
+            api.hideProgress();
+            if (ret) {
+                fs.remove({
+                    path: api.pageParam.imagePath
+                });
+                FNImageClip.close();
+                api.closeFrame({
+                    name: api.frameName
+                });
+                api.sendEvent({
+                    name: 'closeCamera',
+                    extra: {imagePath: ret.destPath}
+                });
+
+
+            } else {
+                alert(JSON.stringify(err));
+            }
+        });
+    }
+
+    function fnClose() {
+        FNImageClip.close();
+        console.log(api.frameName);
+        api.closeFrame({
+            name: api.frameName
+        });
+        // api.closeFrame({
+        //     name: 'name'
+        // });
+    }
+
+    function fnCloseToMain() {
+        FNImageClip.close();
+        api.closeFrame({
+            name: api.frameName
+        });
+        api.sendEvent({
+            name: 'closeCamera'
+        });
+        // api.closeFrame({
+        //     name: 'name'
+        // });
+    }
+
+    function fnReset() {
+        FNImageClip.reset();
+    }
+</script>
+</html>

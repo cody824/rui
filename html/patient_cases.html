@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="viewport" content="height=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+<title>患者病例</title>
+<link rel="stylesheet" href="../css/common.css"/>
+<link rel="stylesheet" href="../css/swiper.min.css">
+<link rel="stylesheet" href="../css/style.css"/>
+<style>
+    .swiper-container {
+      width: 100%;
+      height: 100%;
+    }
+    .swiper-slide {
+      text-align: center;
+      font-size: 18px;
+      background: #fff;
+
+      /* Center slide text vertically */
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+	  width:45%;
+    }
+  </style>
+    <script type="text/javascript" src="../js/jquery-2.0.0.min.js"></script>
+    <script type="text/javascript" src="../js/swiper.min.js"></script>
+</head>
+<body>
+<div class="account_info">
+    <div class="regTop"><span class="title">全部病例</span> <a class="back" href="javascript:gotoMain()"></a> <span
+            class="edit choose">选择</span></div>
+  <div class="content">
+    <div class="patient_cases">
+    	<div class="patient_details">
+        	<dl class="list_dl">
+              <dt class="list_dt"> <span><img src="../images/list_user_icon.png"></span> </dt>
+              <dd class="list_dd">
+                <div class="list_details">
+                  <div class="list_info">
+                      <p class="list_name"><span></span></p>
+                      <p class="list_time">ID:<span>0009</span></p>
+                  </div>
+                    <a class="list_opr" href="javascript:void(0);"></a>
+                </div>
+              </dd>
+            </dl>
+        </div>
+        <div id="cases-list">
+        </div>
+    </div>
+  </div>
+</div>
+<div class="menu_wrap">
+    	<div class="menu clearfix">
+            <a class="add" href="javascript:addCases()"></a>
+            <div class="menu_opr">
+            	<div class="menu_section time">
+                    <div class="menu_section_name">
+                        <span></span>
+                    </div>
+                </div>
+                <!--<div class="menu_section share">-->
+                <!--<div class="menu_section_name">-->
+                <!--<span></span>-->
+                <!--</div>-->
+                <!--</div>-->
+                <div class="menu_section delete checked">
+                    <div class="menu_section_name">
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="shadow">
+    	<!--单个病例的三个弹出-->
+        <div class="modify_msg time_interval">
+        	<h5>确定要取消自动清理该病例么？</h5>
+            <!--<a class="sure" href="login.html" style="margin-right:40px;">确定</a>-->
+            <button class="sure" type="button" style="margin-right:40px;">确定</button>
+            <button class="cancel" type="button">取消</button>
+        </div>
+        <div class="modify_msg delete_msg">
+        	<h5>确定要删除该病例么？</h5>
+            <!--<a class="sure" href="login.html" style="margin-right:40px;">确定</a>-->
+            <button class="sure" type="button" style="margin-right:40px;">确定</button>
+            <button class="cancel" type="button">取消</button>
+        </div>
+        <div class="modify_msg share_msg">
+        	<div class="share_code">
+            	<h6>分享码：</h6>
+                <p>993B164893B11C9348906B<span>复制文本</span></p>
+            </div>
+            <button class="sure" type="button" style="margin-right:40px;">确定</button>
+            <button class="cancel" type="button">取消</button>
+        </div>
+        <!--选中病例的三个弹出-->
+        <div class="modify_msg all_time_interval">
+        	<h5>确定要取消自动清理选中病例么？</h5>
+            <button class="sure" type="button" style="margin-right:40px;">确定</button>
+            <button class="cancel" type="button">取消</button>
+        </div>
+        <div class="modify_msg all_delete_msg">
+        	<h5>确定要删除选中病例么？</h5>
+            <button class="sure" type="button" style="margin-right:40px;">确定</button>
+            <button class="cancel" type="button">取消</button>
+        </div>
+        <div class="modify_msg all_share_msg">
+        	<div class="share_code">
+            	<h6>分享码：</h6>
+                <p>993B164893B11C9348906B<span>复制文本</span></p>
+            </div>
+            <button class="sure" type="button" style="margin-right:40px;">确定</button>
+            <button class="cancel" type="button">取消</button>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var s_h = window.screen.height;
+        //alert(s_h);
+        $('.patient_cases').height(s_h - 140);
+			$('.choose').click(function(e) {
+				var ed_txt=$(this).text();
+				if(ed_txt=='选择'){
+					$('.patient_opr').hide();
+					$('.patient_details .text .checkbox').show();
+					$(this).text('取消');
+					$('.menu .add').hide();
+					$('.menu_opr').show(); 
+					$('.patient_details .text').click(function(e) {
+						$(this).children('.checkbox').toggle();
+					});
+				}else{
+					$('.patient_opr').show();
+					$(this).text('选择'); 
+					$('.patient_details .text .checkbox').hide(); 
+					$('.menu .add').show();
+					$('.menu_opr').hide(); 
+				} 
+			});
+
+			/*针对整体选中的病例的三个操作*/
+			$('.menu_section.time').click(function(e) {
+                if (appConfig.disableAutoClean) {
+                    api.alert({
+                        title: '提示',
+                        msg: '没有开启自动清理功能，如需要请在设置中开启',
+                        buttons: ["确定"]
+                    });
+                    return;
+                }
+
+                var ids = [];
+                $('.patient_details .text .checkbox:visible').each(function () {
+                    var casesId = $(this).closest(".patient_details").attr('data-casesId');
+                    ids.push(casesId);
+                });
+
+                if (ids.length == 0) {
+                    alert("请选择病例");
+                    return;
+                }
+
+                var msg = "确定要取消自动清理选中病例吗？"
+                api.confirm({
+                    title: '提示',
+                    msg: msg,
+                    buttons: ["确定", "取消"]
+                }, function (ret, err) {
+                    if (ret.buttonIndex == 1) {
+
+                        for (var i = 0; i < ids.length; i++) {
+                            var cases = casesPool.get(patient.id, ids[i]);
+                            cases.disableAutoClean = true;
+                            casesPool.update(cases);
+                        }
+                        api.sendEvent({
+                            name: 'loadCases'
+                        });
+                    }
+                });
+			});
+			$('.menu_section.delete').click(function(e) {
+                var ids = [];
+                $('.patient_details .text .checkbox:visible').each(function () {
+                    var casesId = $(this).closest(".patient_details").attr('data-casesId');
+                    ids.push(casesId);
+                });
+
+                if (ids.length == 0) {
+                    alert("请选择病例");
+                    return;
+                }
+
+                var msg = "确定要删除选中病例吗？"
+                api.confirm({
+                    title: '提示',
+                    msg: msg,
+                    buttons: ["确定", "取消"]
+                }, function (ret, err) {
+                    if (ret.buttonIndex == 1) {
+                        for (var i = 0; i < ids.length; i++) {
+                            casesPool.del(patient.id, ids[i]);
+                        }
+                        api.sendEvent({
+                            name: 'loadCases'
+                        });
+                    }
+                });
+            });
+
+        $('#cases-list').on('click', '.patient_opr .delete', function () {
+            var casesId = $(this).attr('data-casesId');
+            api.confirm({
+                title: '提示',
+                msg: '确认要删除该病例吗？',
+                buttons: ["确定", "取消"]
+            }, function (ret, err) {
+                if (ret.buttonIndex == 1) {
+                    casesPool.del(patient.id, casesId);
+                    api.sendEvent({
+                        name: 'loadCases'
+                    });
+                }
+            });
+        }).on('click', '.patient_opr .time', function () {
+
+            if (appConfig.disableAutoClean) {
+                api.alert({
+                    title: '提示',
+                    msg: '没有开启自动清理功能，如需要请在设置中开启',
+                    buttons: ["确定"]
+                });
+                return;
+            }
+
+            var disable = $(this).attr('data-disable-clean') == "true" ? true : false;
+            var msg = "确定要取消自动清理该病例吗？"
+            if (disable) {
+                msg = "确认要开启自动清理该病例吗？";
+            }
+            var casesId = $(this).attr('data-casesId');
+            api.confirm({
+                title: '提示',
+                msg: msg,
+                buttons: ["确定", "取消"]
+            }, function (ret, err) {
+                if (ret.buttonIndex == 1) {
+                    var cases = casesPool.get(patient.id, casesId);
+                    cases.disableAutoClean = !disable;
+                    casesPool.update(cases);
+
+                    api.sendEvent({
+                        name: 'loadCases'
+                    });
+                }
+            });
+
+        }).on('click', '.patient_opr .share', function () {
+            var casesId = $(this).attr('data-casesId');
+            var cases = casesPool.get(patient.id, casesId);
+            var sharedModule = api.require('shareAction');
+
+            if (cases.shareCode) {
+                var shareMsg = appConfig.user.fullName + "给您分享了患者" + patient.patientName + "的病例，请通过分享码" + cases.shareCode + "在app中查看";
+                sharedModule.share({
+                    text: shareMsg,
+                    type: 'text'
+                });
+            } else {
+                api.confirm({
+                    title: '提示',
+                    msg: '分享病例需要上传，确认上传吗？',
+                    buttons: ["确定", "取消"]
+                }, function (ret, err) {
+                    if (ret.buttonIndex == 1) {
+                        casesPool.upload(cases, function (cases) {
+                            api.sendEvent({
+                                name: 'loadCases'
+                            });
+                            var shareMsg = appConfig.user.fullName + "给您分享了患者" + patient.patientName + "的病例，请通过分享码[" + cases.shareCode + "]在app中查看";
+                            sharedModule.share({
+                                text: shareMsg,
+                                type: 'text'
+                            });
+                        });
+                    }
+                });
+            }
+        }).on('click', '.patient_photo', function () {
+            var casesId = $(this).attr('data-casesId');
+            var cases = casesPool.get(patient.id, casesId);
+            gotoEditCases(patient, cases);
+        });
+
+        $('.modify_msg.share_msg .cancel').click(function (e) {
+            $('.shadow').hide();
+        });
+        $('.modify_msg.share_msg .sure').click(function (e) {
+            $('.shadow').hide();
+        });
+
+    </script>
+</body>
+</html>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/app.js"></script>
+<script type="text/javascript" src="../script/user.js"></script>
+<script type="text/javascript" src="../script/patient.js"></script>
+<script type="text/javascript" src="../script/cases.js"></script>
+<script type="text/javascript" src="../script/navi.js"></script>
+<script type="text/javascript">
+    var patient;
+
+    function addCases() {
+        gotoEditCases(patient);
+    }
+
+    apiready = function () {
+        patient = api.pageParam.patient;
+        $api.text($api.dom('.list_name span'), patient.patientName);
+        $api.text($api.dom('.list_time span'), patient.medicalNumber)
+
+        $api.addEvt($api.dom('.list_opr'), 'click', function () {
+            gotoPatientEdit(patient, "PatientCases");
+        });
+        loadAll();
+
+        api.addEventListener({
+            name: 'loadCases'
+        }, function (ret, err) {
+            loadAll();
+        });
+
+        api.addEventListener({
+            name: 'keyback'
+        }, function (ret, err) {
+            gotoMain();
+        });
+    }
+
+    function loadAll() {
+        var html = "";
+        var casesList = casesPool.data[patient.id];
+        if (casesList && casesList.length > 0) {
+            for (var i = 0; i < casesList.length; i++) {
+                html += buildCasesHtml(casesList[i]);
+            }
+        }
+        $('#cases-list').html(html);
+        var swiper = new Swiper('.swiper-container', {
+            slidesPerView: 2,
+            spaceBetween: 20,
+            freeMode: true,
+        });
+        $('.patient_opr').show();
+        $('.choose').text('选择');
+        $('.patient_details .text .checkbox').hide();
+        $('.menu .add').show();
+        $('.menu_opr').hide();
+    }
+
+    function buildCasesHtml(cases) {
+        var visitTime = ""
+        var keepDay;
+        var now = new Date();
+        if (cases.visitTime) {
+            var visitDate = new Date(cases.visitTime);
+            keepDay = parseInt((now.getTime() - visitDate.getTime()) / 1000 / 3600 / 24);
+            visitTime = visitDate.Format("yyyy-MM-dd");
+        }
+        cases.disableAutoClean = cases.disableAutoClean || false;
+        var keepDay = (cases.disableAutoClean || appConfig.disableAutoClean) ? "保留" : appConfig.cleanPeriod - keepDay;
+
+
+        var html = '<div class="patient_details" data-casesId="' + cases.id + '">\n' +
+            '            <p class="text">\n' +
+            '            \t<span class="checkbox"></span>\n' +
+            '                <span>' + cases.disease + '</span>\n' +
+            '                <span>' + visitTime + '</span>\n' +
+            '            </p>\n' +
+            '            <div class="patient_photo"  data-casesId="' + cases.id + '">\n' +
+            '            \t<div class="swiper-container">\n' +
+            '                \t<div class="swiper-wrapper">\n';
+        for (var i = 0; i < cases.images.length; i++) {
+            html += '<div class="swiper-slide"><img src="' + cases.images[i] + '" width="100%" height="100%"></div>'
+        }
+
+        html += '                    </div>\n' +
+            '                </div>\n' +
+            '            </div>\n' +
+            '            <div class="patient_opr">\n' +
+            '            \t<span data-disable-clean="' + cases.disableAutoClean + '" data-casesId="' + cases.id + '"  class="time">' + keepDay + '</span>\n' +
+            '                <span data-casesId="' + cases.id + '" class="share"></span>\n' +
+            '                <span data-casesId="' + cases.id + '" class="delete"></span>\n' +
+            '            </div>\n' +
+            '        </div>';
+        return html;
+    }
+</script>

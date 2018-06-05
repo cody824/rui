@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="viewport"
+          content="height=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+    <title>病症位置</title>
+    <link rel="stylesheet" href="../../css/common.css"/>
+    <link rel="stylesheet" href="../../css/style.css"/>
+    <script type="text/javascript" src="../../js/jquery-2.0.0.min.js"></script>
+</head>
+<body style="background:#efeff4;">
+<div class="password_modify">
+    <div class="regTop">
+        <span class="title">病症位置</span>
+        <a class="back" href="javascript:goBack()"></a>
+        <a class="edit finish" href="javascript:save()">完成</a>
+    </div>
+    <div class="content">
+        <div class="illness_lists">
+            <div class="patient_sex">
+                <label>性别</label>
+                <div class="sex_man"><input type="radio" name="sex" value="1">男</div>
+                <div class="sex_woman"><input type="radio" checked name="sex" value="0">女</div>
+            </div>
+            <ul class="illness_ul">
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+    var s_h = window.screen.height;
+    //alert(s_h);
+    $('.illness_lists').height(s_h - 65);
+
+
+    $('.illness_lists').on('click', '.illness_li', function () {
+        var leaf = $(this).attr('data-leaf');
+        bodyParts = $(this).find('span').text();
+        if (leaf == "true") {
+            $(this).addClass('on').siblings().removeClass('on');
+
+        } else {
+            load(bodyParts);
+        }
+    });
+
+    $('input[name=sex]').change(function () {
+        sex = $(this).val();
+        load(lastView);
+    });
+
+    // $('.illness_li:last-child').click(function(e) {
+    //     /*var s=$('.patient_sex .sex_woman input').attr('checked','checked');*/
+    // var s=$('.patient_sex input:checked').val();
+    // //alert(s);
+    // if(s=='女'){
+    // 	$(this).children().children().attr('href','illness_thigh_woman.html');
+    // }else{
+    // 	$(this).children().children().attr('href','illness_thigh_man.html');
+    // }
+    // });
+</script>
+<script type="text/javascript" src="../../script/disease.js"></script>
+<script type="text/javascript">
+    var patient;
+    var sex;
+    var bodyParts;
+    var lastView;
+
+    apiready = function () {
+        patient = api.pageParam.patient;
+        sex = patient.sex;
+
+        if (sex == 1) {
+            $('input[name=sex]:eq(0)').attr('checked', true);
+        } else {
+            $('input[name=sex]:eq(1)').attr('checked', true);
+        }
+        load();
+        api.addEventListener({
+            name: 'goBack'
+        }, function (ret, err) {
+            goBack();
+        });
+    }
+
+    function load(partName) {
+        lastView = partName;
+        var children;
+        if (partName) {
+            children = getBodyParts(partName, sex);
+
+        } else {
+            children = bodyPool;
+        }
+        var html = "";
+        for (var i = 0; i < children.length; i++) {
+            var part = children[i];
+            html += getLi(part);
+        }
+
+        $('.illness_ul').empty();
+        $('.illness_ul').html(html);
+    }
+
+
+    function getLi(part) {
+        var leaf = true;
+        if (part.children || part.male || part.female) {
+            leaf = false;
+        }
+
+        var li = '<li class="illness_li" data-leaf="' + leaf + '">' +
+            '       <span class="checkbox"></span>' +
+            '       <span class="text" >' + part.name + '</span>' +
+            '     </li>';
+        return li;
+    }
+
+    function goBack() {
+        if (lastView) {
+            load();
+        } else {
+            api.closeFrame({
+                name: api.frameName
+            });
+            api.sendEvent({
+                name: 'canBack'
+            });
+        }
+    }
+
+    function save() {
+        var $selected = $('.illness_li.on');
+        if ($selected.length > 0) {
+            api.sendEvent({
+                name: 'selectBodyParts',
+                extra: {bodyParts: $selected.eq(0).find('span').text()}
+            });
+        }
+        api.closeFrame({
+            name: api.frameName
+        });
+    }
+</script>

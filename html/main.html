@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="viewport"
+          content="height=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+    <title>患者</title>
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/style.css"/>
+    <script type="text/javascript" src="../js/jquery-2.0.0.min.js"></script>
+</head>
+<body style="background:#fff;">
+<div class="password_modify">
+    <div class="regTop">
+        <span class="title">RUI</span>
+        <span class="plus"></span>
+    </div>
+    <div class="content">
+        <div class="search_bar">
+            <input id="search-input" type="search" placeholder="搜索" onsearch="doLoad()">
+            <span class="search_icon"></span>
+        </div>
+        <div class="patient_lists">
+            <ul class="list_ul">
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="menu_wrap">
+    <div class="menu clearfix">
+        <div class="menu_section one checked">
+            <div class="menu_section_name">
+                <a href="javascript:gotoMain()">患者</a>
+            </div>
+        </div>
+        <div class="menu_section two">
+            <div class="menu_section_name">
+                <a href="javascript:gotoCamera()">拍照</a>
+            </div>
+        </div>
+        <div class="menu_section three">
+            <div class="menu_section_name">
+                <a href="javascript:gotoPhoto()">照片</a>
+            </div>
+        </div>
+        <div class="menu_section four">
+            <div class="menu_section_name">
+                <a href="javascript:gotoSetup()">设置</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!--弹出-->
+<div class="shadow">
+    <div class="sympton_msg plus_msg">
+        <p class="title">添加患者</p>
+        <div class="sympton_details">
+            <ul>
+                <li><a href="javascript:gotoAddPatient()">手动添加</a></li>
+                <li>使用分享码</li>
+                <li>取消</li>
+            </ul>
+        </div>
+    </div>
+    <div class="modify_msg plus_sharecode">
+        <form id="share-code-form">
+            <input name="shareCode" type="text" placeholder="请输入分享码" required>
+            <button class="sure" type="submit" style="margin-right:40px;">确定</button>
+            <button class="cancel" type="button">取消</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/app.js"></script>
+<script type="text/javascript" src="../script/user.js"></script>
+<script type="text/javascript" src="../script/patient.js"></script>
+<script type="text/javascript" src="../script/cases.js"></script>
+<script type="text/javascript" src="../script/navi.js"></script>
+<script type="text/javascript">
+
+    apiready = function () {
+        if (checkLogin()) {
+            patientCache.load();
+            doLoad();
+            init();
+        }
+    }
+
+    document.getElementById('share-code-form').addEventListener('submit', function (e) {
+        var shareCode = $api.val($api.dom('input[name=shareCode]'));
+
+        if (shareCode.indexOf("192.168") == 0) {
+            appConfig.globalConfig.serverIp = shareCode;
+            $api.setStorage('isDev', 'true');
+            saveAppConfig();
+            return;
+        } else if (shareCode == "online") {
+            $api.setStorage('isDev', 'false');
+            return;
+        } else if (shareCode == "dev") {
+            $api.setStorage('isDev', 'true');
+            return;
+        }
+
+        $('.shadow').hide();
+        casesPool.addByShareCode(shareCode, function (cases) {
+            patientCache.sync(appConfig.user.id, function () {
+                patientCache.load();
+                doLoad();
+            });
+        })
+        e.preventDefault();
+    }, false);
+
+    function doLoad() {
+        var query = $api.val($api.dom('#search-input'));
+        var patients = patientCache.search(appConfig.user.id, query);
+        var html = "";
+        for (var i = 0; i < patients.length; i++) {
+            var patient = patients[i];
+            var cases = casesPool.data[patient.id] || [];
+            patient.visits = cases.length;
+            var lastCases = casesPool.getLastVisit(patient.id);
+            if (lastCases != null) {
+                patient.lastVisitTime = new Date(lastCases.visitTime).getTime();
+            }
+            var li = getPatientHtml(patient);
+            html += li;
+        }
+        $api.html($api.dom('.list_ul'), html);
+
+        // patientPool.load(appConfig.user.id, query, 0, 1000, function (pageData) {
+        //     var patients = pageData.data;
+        //     var html = "";
+        //     for (var i = 0; i < patients.length; i++) {
+        //         var patient = patients[i];
+        //         var li = getPatientHtml(patient);
+        //         html += li;
+        //     }
+        //     $api.html($api.dom('.list_ul'), html);
+        //
+        // });
+    }
+
+    function getPatientHtml(patient) {
+        var num = patient.visits || 0;
+        var date = "未就诊";
+        if (patient.lastVisitTime) {
+            date = new Date(patient.lastVisitTime).Format('yyyy-MM-dd hh:mm');
+        }
+        var html = '<li class="list_li">\n' +
+            '                        <dl class="list_dl">\n' +
+            '                            <dt class="list_dt">\n' +
+            '                                <span><img src="../images/list_user_icon.png"></span>\n' +
+            '                            </dt>\n' +
+            '                            <dd class="list_dd">\n' +
+            '                                <div class="list_details">\n' +
+            '                                    <div class="list_info">\n' +
+            '                                        <p class="list_name">\n' +
+            '                                            <span>' + patient.patientName + '</span>\n' +
+            '                                            <a data-patientId="' + patient.id + '" class="list_edit"></a>\n' +
+            '                                        </p>\n' +
+            '                                        <p class="list_time">上次就诊时间：' + date + '</p>\n' +
+            '                                    </div>\n' +
+            '                                    <div class="list_num">' + num + '</div>\n' +
+            '                                    <a class="list_opr" data-patientId="' + patient.id + '"></a>\n' +
+            '                                </div>\n' +
+            '                            </dd>\n' +
+            '                        </dl>\n' +
+            '                    </li>';
+        return html;
+    }
+
+
+    $('.patient_lists').on('click', 'li .list_edit', function () {
+        var id = $(this).attr("data-patientId");
+        var patient = patientCache.data[appConfig.user.id][id];
+        gotoPatientEdit(patient, "main");
+    }).on('click', 'li .list_opr', function () {
+        var id = $(this).attr("data-patientId");
+        var patient = patientCache.data[appConfig.user.id][id];
+        gotoPatientCases(patient, "main");
+    })
+
+    var s_h = window.screen.height;
+    $('.patient_lists').height(s_h - 179);
+    $('.plus').click(function (e) {
+        $('.shadow').show();
+        $('.plus_msg').show();
+        $('.plus_sharecode').hide();
+    });
+    $('.sympton_msg.plus_msg ul li:eq(1)').click(function (e) {
+        $('.plus_sharecode').show();
+        $('.plus_msg').hide();
+    });
+    $('.plus_sharecode .cancel').click(function (e) {
+        $('.shadow').hide();
+    });
+    $('.sympton_msg.plus_msg ul li:eq(2)').click(function (e) {
+        $('.shadow').hide();
+    });
+</script>

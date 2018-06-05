@@ -1,0 +1,1388 @@
+body{
+    background: #efeff4;
+    width: 100%;
+    height: 100%;
+}
+
+html {
+    width: 100%;
+    height: 100%;
+}
+
+.content {
+    padding-bottom: 64px;
+}
+
+.password_modify {
+    height: 100%;
+    overflow: hidden;
+}
+/*载入*/
+.loading_wrap{
+	width:90%;
+	height:200px;
+	position:absolute;
+	top:50%;
+	left:50%;
+	margin-top:-90px;
+	margin-left:-45%;
+	/*background:red;*/
+}
+.loading{
+	position:relative;
+	overflow:hidden;
+	width:100%;
+	height:100%;
+}
+.loading img{
+	width:100%;
+	display:block;
+	
+}
+.loading .loading_up,.loading .loading_down{
+	display:none;
+}
+.loading .loading_up{
+	position:absolute;
+	bottom:60px;
+}
+.loading .loading_down{
+	position:absolute;
+	bottom:60px;
+}
+/*账号信息*/
+/*.regTop{
+    width: 100%;
+    padding:6% 0;
+    background: #00cccc;
+    text-align: center;
+    color: #ffffff;
+    position: relative;
+	font-size:1.2em;
+}
+*//*.regTop{
+    width: 100%;
+    height:65px;
+	line-height:65px;
+    background: #00cccc;
+    text-align: center;
+    color: #ffffff;
+    position: fixed;
+	font-size:1.2em;
+	z-index:999;
+	top:0;
+}
+*/
+.regTop{
+    width: 100%;
+    height: 65px;
+    line-height: 65px;
+    background: #00cccc;
+    text-align: center;
+    color: #ffffff;
+    position: relative;
+	font-size:1.2em;
+}
+.back{
+    position: absolute;
+    left: 5%;
+    top: 0;
+	background:url(../images/back.png) no-repeat left center;
+	width:30px;
+	height:100%;
+	background-size:30px 45%;
+}
+.enter{
+    position: absolute;
+    right: 5%;
+    top: 0;
+	background:url(../images/enter.png) no-repeat left center;
+	width:30px;
+	height:100%;
+	background-size:30px 45%;
+}
+/*.edit{
+	float:right;
+	margin-right:5%;
+	font-size:0.75em;
+	color:#fff;
+	height:100%;
+	vertical-align:middle;
+	margin-top:0.25em;
+}*/
+.edit{
+	position:absolute;
+	right:5%;
+    height: 65px;
+    line-height: 65px;
+	font-size:0.75em;
+	color:#fff;
+	height:100%;
+	vertical-align:middle;
+    /*top:35%;*/
+    top: 0%;
+}
+
+.account_wrap {
+    width: 100%;
+    overflow-y: scroll;
+}
+.message_line{
+	height:35px;
+	line-height:35px;
+	margin:0 auto 15px;
+	width:100%;
+	display:block;
+	color:#333;
+    overflow: hidden;
+	/*border-bottom: 1px solid #c3c3c5;*/
+}
+.message_line label{
+	width:20%;
+	height:100%;
+	float:left;
+	margin-left:5%;
+}
+.message{
+    background: #ffffff;
+    /*padding:2% 5% 0 5%;*/
+	padding:15px 0 8px;
+    position: relative;
+}
+.message input{
+    width: 65%;
+    font-size: 0.875em;
+	float:right;
+	height:35px;
+	line-height:35px;
+	margin-right:5%;
+	border:none;
+	text-align:center;
+}
+.content form{
+    width: 100%;
+    height: 100%;
+}
+.submit,.back_login{
+    width: 84%;
+    margin: 10% 8% 0;
+    background: #00cccc;
+    color: #ffffff;
+    border: 0;
+    padding: 2.5% 0;
+    font-size: 1em;
+	-webkit-box-shadow: 0px 2px 6px 0px rgba(0,0,0,0.5);
+    -moz-box-shadow: 0px 2px 6px 0px rgba(0,0,0,0.5);
+    box-shadow: 0px 2px 6px 0px rgba(0,0,0,0.5);
+	border-radius:5px;
+	display:block;
+	text-align:center;
+}
+.back_login{
+	background: #ff9966;
+}
+::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color:    #999;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color:    #999;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color:    #999;
+}
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+   color:    #999;
+}
+.sex_choose{
+	width:120px;
+	height:80px;
+	border-radius:5px;
+	border:1px solid #ccc;
+	position:absolute;
+	top:55%;
+	right:8%;
+	background:#fcfcfc;
+	box-shadow:0px 0px 6px #555;
+	display:none;
+}
+.sex_choose span{
+	display:block;
+	height:40px;
+	line-height:40px;
+	text-align:center;
+	font-size:0.875em;
+}
+.sex_choose span:first-child{
+	border-bottom:1px solid #ccc;
+}
+
+/*修改密码*/
+.code{
+    position: absolute;
+    top: 32.5%;
+    right:10%;
+    color: #00cccc;
+    font-size: 0.875em;
+}
+.message.password_modify input{
+	text-align:left;
+}
+.shadow{
+	width:100%;
+	height:100%;
+	position:absolute;
+	left:0;
+	top:0;
+	border:0;
+	background:rgba(0,0,0,0.5);
+    z-index: 900;
+	display:none;
+}
+.modify_msg{
+	width:94%;
+	height:160px;
+	position:absolute;
+	top:40%;
+	margin-top:-80px;
+	left:50%;
+	margin-left:-47%;
+	background:#fcfcfc;
+	-webkit-box-shadow: 0px 2px 6px 0px rgba(0,0,0,0.5);
+    -moz-box-shadow: 0px 2px 6px 0px rgba(0,0,0,0.5);
+    box-shadow: 0px 2px 6px 0px rgba(0,0,0,0.5);
+	border-radius:10px;
+}
+.modify_msg h5{
+	font-size:1em;
+	text-align:center;
+	height:100px;
+	line-height:100px;
+	font-weight:normal;
+	padding-top:20px;
+}
+.modify_msg .sure,.modify_msg .cancel{
+	float:right;
+	border:none;
+	background:none;
+	margin:0 20px;
+	color:#00cccc;
+	font-size:1em;
+}
+.modify_msg .sure:focus,.modify_msg .cancel:focus{
+	outline:none;
+}
+/*设置*/
+.menu_wrap{
+	position: fixed;
+	right: 0;
+	bottom: 0;
+	width: 100%;
+	height: 64px;
+	z-index: 4;
+	background:#fff;
+}
+.menu{
+	position: relative;
+	z-index: 3;
+	bottom: 0;
+	border-top: 1px solid #ccc;
+	background: #fff;
+	text-align: center;
+	/*box-sizing: border-box;
+	-webkit-box-sizing: border-box;*/
+}
+.menu_section{
+	float: left;
+    width: 25%;
+	height: 64px;
+	line-height: 64px;
+	background:#fff;
+	/*box-sizing: border-box;
+	-webkit-box-sizing: border-box;*/
+}
+.menu_section.checked a{
+	color:#00cccc;
+}
+.menu_section.one{
+	background:url(../images/icon_patient.png) no-repeat center 4px;
+}
+.menu_section.two{
+    background: url(../images/icon_camera.png) no-repeat center 4px;
+}
+
+.menu_section.three {
+	background:url(../images/icon_photo.png) no-repeat center 4px;
+}
+
+.menu_section.four {
+	background:url(../images/icon_setting.png) no-repeat center 4px;
+}
+.menu_section a{
+	display:block;
+	text-align:center;
+	padding-top:30px;
+	line-height:30px;
+}
+.menu_section.checked.one{
+	background:url(../images/icon_patient_pressed.png) no-repeat center 4px;
+}
+.menu_section.checked.two a{
+    background: url(../images/icon_camera_pressed.png) no-repeat center 4px;
+}
+.menu_section.checked.three a{
+    background: url(../images/icon_photo_pressed.png) no-repeat center 4px;
+}
+
+.menu_section.checked.four a {
+	background:url(../images/icon_setting_pressed.png) no-repeat center 4px;
+}
+
+.content_setting {
+    width: 100%;
+    overflow-y: scroll;
+}
+.account_set{
+	width:100%;
+	height:50px;
+	background:#efeff4;
+}
+.account_set .message{
+	background:none;
+	padding:7px 0 8px;
+}
+.account_set .message label{
+	background:url(../images/user_icon.png) no-repeat left center;
+	padding-left:40px;
+	margin-left:3%;
+}
+.message_line.special{
+	margin-bottom:5px;
+}
+.account_set .message .clear{
+	height:35px;
+	line-height:35px;
+	margin-left:3%;
+	display:block;
+	background:url(../images/clock_icon.png) no-repeat left center;
+	padding-left:40px;
+}
+.switch{
+	height:40px;
+	line-height:40px;
+	background:#fff;
+	margin-top:10px;
+	padding:0 5%;
+}
+.switch .on_off{
+	width:50px;
+	height:100%;
+	float:right;
+}
+.switch .on{
+	background:url(../images/switch_on.png) no-repeat center center;
+	display:block;
+	height:100%;
+	cursor:pointer;
+}
+.switch .off{
+	background:url(../images/switch_off.png) no-repeat center center;
+	display:block;
+	height:100%;
+	cursor:pointer;
+}
+.message.copyrights{
+	height:35px;
+	padding-top:3px;
+	padding-bottom:2px;
+	margin-top:10px;
+}
+.sympton_msg.period_msg{
+	z-index:9;
+	top:-180px;
+}
+/*患者*/
+.plus{
+    position: absolute;
+    right: 5%;
+    top: 50%;
+	background:url(../images/plus_icon.png) no-repeat right center;
+	width:40px;
+	height:40px;
+	margin-top:-20px;
+}
+.search_bar{
+	height:30px;
+	background:#efeff4;
+	padding:10px 0;
+	position:relative;
+}
+.search_bar input{
+	display:block;
+	height:30px;
+	line-height:30px;
+	background:#fff;
+	border-radius:5px;
+	margin:0 auto;
+	border:none;
+	padding-left:10%;
+    /*width:80%;*/
+    width: 90%;
+    /*text-align:center;*/
+}
+.search_icon{
+	position:absolute;
+	left:6%;
+	top:50%;
+	height:30px;
+	width:30px;
+	margin-top:-15px;
+	background:url(../images/search_icon.png) no-repeat left center;
+	
+}
+.sympton_msg.plus_msg{
+	top:20%;
+	left:50%;
+	margin-left:-85px;	
+	height:auto;
+}
+.sympton_msg.plus_msg .sympton_details{
+	height:auto;
+}
+.sympton_msg.plus_msg ul li{
+	color:#333;
+}
+.modify_msg.plus_sharecode{
+	display:none;
+}
+.modify_msg.plus_sharecode input{
+	display:block;
+	width:80%;
+	margin:50px auto 30px;
+	height:35px;
+	line-height:35px;
+	border-radius:5px;
+	border:1px solid #ddd;
+	padding:0 2%;
+}
+.patient_lists{
+	width:100%;
+	height:auto;
+	overflow:hidden;
+}
+.list_ul{
+	width:96%;
+	margin-left:4%;
+    height: 100%;
+    overflow-y: scroll;
+}
+.list_li{
+	width:100%;
+	height:80px;
+	border-bottom:1px solid #e7e7e7;
+}
+.list_dl{
+	width:100%;
+	height:100%;
+	overflow:hidden;
+}
+.list_dt{
+	float:left;
+	width:20%;
+}
+.list_dt span{
+	width:50px;
+	height:50px;
+	border-radius:40px;
+	background:#00cccc;
+	display:block;
+	margin:15px 3% 15px 0;
+}
+.list_dt span img{
+	display:block;
+	text-align:center;
+	margin:0 auto;
+	padding:5px 0;
+}
+.list_dd{
+	float:left;
+	height:80px;
+	width:80%;
+}
+.list_details{
+	width:99%;
+	height:100%;
+	overflow:hidden;
+	margin-right:1%;
+}
+.list_info{
+	width:70%;
+	float:left;
+}
+.list_info .list_name{
+	width:100%;
+	padding-top:5px;
+	height:45px;
+	line-height:45px;
+	font-size:1em;
+}
+.list_info .list_name span{
+	float:left;
+}
+.list_info .list_name .list_edit{
+	background:url(../images/list_edit.png) no-repeat center center;
+	width:50px;
+	height:100%;
+	float:left;
+}
+.list_info .list_time{
+	font-size:0.75em;
+	color:#999;
+}
+.list_num,.list_opr{
+	width:15%;
+	float:left;
+}
+.list_num{
+	height:80px;
+	line-height:80px;
+	text-align:center;
+	color:#00cccc;
+	font-size:1.6em;
+}
+.list_opr{
+	height:80px;
+	background:url(../images/enter.png) no-repeat center center;
+	background-size:30px;
+}
+/*患者信息*/
+.add_patient {
+    width: 100%;
+    overflow-y: scroll;
+}
+.account_set .message .clear.info{
+	background:url(../images/user_plus.png) no-repeat left center;
+}
+.account_set .message .option.clear{
+	background:url(../images/coffee.png) no-repeat left center;
+}
+.delete_patient{
+	background:#ff3300;
+}
+.patient_msg{
+	
+}
+/*家族病史*/
+.illness_lists{
+	width:100%;
+    overflow-y: scroll;
+}
+.illness_ul{
+	width:100%;
+	height:auto;
+    background: #fff;
+}
+.illness_li:last-child{
+	border-bottom:none;
+}
+.illness_li{
+	width:100%;
+	height:50px;
+	line-height:50px;
+	text-align:center;
+    border-bottom: 1px solid #dedede;
+	position:relative;
+}
+.illness_li .checkbox{
+	position:absolute;
+	left:3%;
+	width:10%;
+	height:50px;
+	background:url(../images/checkbox_icon.png) no-repeat center center;
+	background-size:25px;
+	top:50%;
+	margin-top:-25px;
+	display:none;
+}
+
+.illness_li.on .checkbox {
+    display: block;
+}
+/*皮肤类型*/
+.skintype_lists{
+	width:100%;
+	height:auto;
+	padding-bottom:15px;
+}
+.skintype_ul{
+	width:100%;
+	height:auto;
+}
+.skintype_li{
+	width:100%;
+	height:auto;
+}
+.skintype_li .type{
+	width:100%;
+	height:45px;
+	line-height:45px;
+	text-align:center;
+	position:relative;
+	color:#ff9966;
+	background:#efeff4;
+	font-weight:bold;
+}
+.skintype_li .type .checkbox{
+	position:absolute;
+	left:3%;
+	width:10%;
+	height:45px;
+	background:url(../images/checkbox_icon.png) no-repeat center center;
+	background-size:25px;
+	top:50%;
+	margin-top:-22px;
+	display:none;
+}
+.skintype_li .details{
+	padding:3%;
+	line-height:1.5em;
+	font-size:0.875em;
+	color:#666;
+}
+.add_submit{
+	background:#ff9966;
+}
+/*患者病例*/
+.patient_cases{
+	width:100%;
+	margin-top:10px;
+	border-top:1px solid #d7d7d7;
+    overflow-y: scroll;
+}
+.patient_details{
+	width:100%;
+	margin-bottom:10px;
+	background:#fff;
+}
+.patient_details .list_dl{
+	width:96%;
+	margin:0 auto;
+}
+.patient_details .list_dl .list_opr{
+	float:right;
+}
+.patient_details .text{
+	border-top:1px solid #d7d7d7;
+	height:50px;
+	line-height:50px;
+	overflow:hidden;
+	color:#999;
+	position:relative;
+}
+.patient_details .text .checkbox{
+	background:url(../images/patient_cases_checkbox.png) no-repeat left center;
+	width:45px;
+	height:100%;
+	position:absolute;
+	left:2%;
+	display:none;
+}
+.patient_details .text span:nth-child(2){
+	float:left;
+	color:#ff9966;
+	margin-left:45px;
+}
+.patient_details .text span:last-child{
+	float:right;
+	margin-right:5%;
+}
+.patient_photo{
+	height:150px;
+	width:100%;
+	border-top:1px solid #d7d7d7;
+	border-bottom:1px solid #d7d7d7;
+}
+.patient_opr{
+	height:50px;
+	line-height:50px;
+	overflow:hidden;
+	color:#999;
+}
+.patient_opr .time{
+	float:left;
+	background:url(../images/time_interval_default.png) no-repeat left center;
+	width:45px;
+	padding-left:35px;
+	margin-left:5%;
+}
+.patient_opr .share{
+	float:left;
+	background:url(../images/back_icon_default.png) no-repeat left center;
+	margin-left:3%;
+	width:80px;
+	height:100%;
+}
+.patient_opr .delete{
+	float:right;
+	background:url(../images/delete_icon_default.png) no-repeat left center;
+	margin-right:5%;
+	width:35px;
+	height:100%;
+}
+.menu_opr{
+	display:none;
+}
+.menu_section.time{
+	background:url(../images/time_interval.png) no-repeat center center;
+}
+.menu_section.share{
+	background:url(../images/back_icon_default.png) no-repeat center center;
+}
+
+.menu_section.delete{
+	background:url(../images/delete_icon_default.png) no-repeat center center;
+}
+.menu .add{
+	width:100%;
+	height:64px;
+	background:url(../images/add_icon.png) no-repeat center center;
+	display:block;
+}
+.all_share_msg h6,.share_msg h6{
+	font-size:1em;
+	text-align:left;
+	height:50px;
+	line-height:50px;
+	font-weight:normal;
+	padding-top:20px;
+	padding-left:20px;
+}
+.share_code{
+	height:120px;
+}
+.share_code p{
+	font-size:0.875em;
+	text-align:center;
+}
+.share_code p span{
+	margin:0 8px;
+	color:#00cccc;
+}
+/*病例详情*/
+.share.edit{
+	width:30px;
+	height:100%;
+	background:url(../images/head_share_icon.png) no-repeat center center;
+	background-size:100%;
+	top:0;
+}
+.patient_form{
+	position:relative;
+}
+.patient_form .message input{
+	width:60%;
+	text-align:left;
+}
+.patient_form .message_line{
+	margin-bottom:8px;
+	position:relative;
+}
+.sympton_textarea{
+	width:86%;
+	display:block;
+	margin:0 auto;
+	min-height:60px;
+	padding:5px 2%;
+	border:1px solid #d7d7d7;
+}
+.sympton_msg{
+	position:absolute;
+	right:5%;
+	width:170px;
+	height:220px;
+	border:1px solid #ccc;
+	-webkit-box-shadow: 0px 2px 10px 0px rgba(0,0,0,0.5);
+    -moz-box-shadow: 0px 2px 10px 0px rgba(0,0,0,0.5);
+    box-shadow: 0px 2px 10px 0px rgba(0,0,0,0.5);
+	background:#fff;
+	top:10px;
+	display:none;
+}
+.sympton_msg.time{
+	top:80px;
+}
+.sympton_msg .title{
+	height:45px;
+	color:#fff;
+	width:100%;
+	line-height:45px;
+	text-align:center;
+	background:#00cccc;
+}
+.sympton_details{
+	height:170px;
+	overflow-y:scroll;
+	width:100%;
+}
+.sympton_details ul li{
+	width:100%;
+	height:40px;
+	line-height:40px;
+	text-align:center;
+	color:#ccc;
+}
+.sympton_details ul li.checked{
+	color:#333;
+}
+.sympton_opr{
+	position:absolute;
+	right:0;
+	height:35px;
+}
+.patient_form .message input.sympton{
+	overflow:hidden;
+	white-space:nowrap;
+	text-overflow:ellipsis;
+}
+/*照片详情*/
+.edit.delete{
+	width:30px;
+	height:100%;
+	background:url(../images/delete_icon_white.png) no-repeat center center;
+	background-size:100%;
+	top:0;
+}
+.pictures{
+	width:100%;
+	height:250px;
+}
+.pictures img{
+	display:block;
+	width:100%;
+	height:200px;
+}
+.pictures span{
+	display:block;
+	height:50px;
+	text-align:center;
+	line-height:50px;
+}
+.shoot{
+	display:block;
+	width:80px;
+	height:45px;
+	background:url(../images/camera01_pressed.png) no-repeat center center;
+	position:absolute;
+	bottom:60px;
+	left:50%;
+	margin-left:-40px;
+	background-size:65%;
+}
+/*症状标签*/
+.picture_labels {
+    width: 100%;
+    overflow-y: scroll;
+}
+.label_lists{
+	width:94%;
+	height:auto;
+	overflow:hidden;
+	color:#999;
+	margin:15px auto 0;
+}
+.label_lists h4{
+	font-size:1.2em;
+	font-weight:normal;
+	color:#333;
+}
+.label_lists .label{
+	width:100%;
+	height:auto;
+	overflow:hidden;
+	margin:15px auto 0;
+	font-size:0.75em;
+}
+.label_lists .label ul li{
+	margin-bottom:3%;
+	width:100%;
+	height:32px;
+	overflow:hidden;
+}
+.label_lists .label ul li span{
+	width:31%;
+	margin-right:2%;
+	height:30px;
+	line-height:30px;
+	text-align:center;
+	border:1px solid #d7d7d7;
+	float:left;
+	background:#fff;
+	border-radius:5px;
+	text-overflow:ellipsis;
+	white-space:nowrap;
+	overflow:hidden;
+}
+.label_lists .label ul li span:last-child{
+	margin-right:0;
+}
+.label_lists .label ul li span.on{
+	background:#00cccc;
+	color:#fff;
+}
+/*添加病例*/
+.add_cases_wrap {
+    width: 100%;
+    overflow-y: scroll;
+    margin-bottom: 10px;
+}
+.add_cases{
+	width:100%;
+    height: 120px;
+	margin-bottom:15px;
+	background:#fff;
+	color:#fff;
+    padding: 10px 0;
+}
+.add_cases ul{
+	width:94%;
+	height:100%;
+	overflow:hidden;
+	margin:0 auto;
+}
+.add_cases ul li{
+	width:33.33%;
+	height:100%;
+	float:left;
+	background-size:45%;
+	font-size:0.75em;
+}
+
+.add_cases ul li:first-child {
+	background:#00cccc url(../images/camera02.png) no-repeat center 25px;
+	background-size:45%;
+    width: 60%;
+}
+.add_cases ul li:last-child{
+    background: #ddd url(../images/add.png) no-repeat center center;
+	background-size:45%;
+    width: 40%;
+}
+
+.add_cases ul li span, .add_cases ul li a {
+	width:100%;
+    height: 100%;
+	display:block;
+}
+
+.add_cases ul li span img {
+    background-size: 100%;
+    width: 100%;
+    height: 100%;
+}
+.picture_type{
+	position:absolute;
+	top:20%;
+	height:130px;
+	z-index:9;
+	right:3%;
+}
+.picture_type ul li a{
+	color:#333;
+}
+/*照片*/
+.picture_list{
+	width:100%;
+	height:auto;
+	margin-top:10px;
+}
+.picture_list ul{
+	width:100%;
+	height:auto;
+}
+.picture_list ul li{
+	width:100%;
+    height: 120px;
+}
+
+.picture_details {
+	width:46%;
+	margin:2%;
+	height:100%;
+	float:left;
+}
+
+.picture_details .photo {
+    width: 100%;
+    background: #eee;
+    height: 90px;
+	border-radius:5px;
+    display: block;
+}
+
+.picture_details .text {
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    overflow: hidden;
+
+}
+
+.picture_details .text .name {
+    width: 35%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    float: left;
+    padding-left: 1%;
+    text-align: center;
+    font-size: 0.875em;
+}
+
+.picture_details .text .illness {
+    font-size: 0.875em;
+    float: right;
+    width: 63%;
+    text-align: center;
+    color: #ff9966;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.sympton_msg.choose{
+	position:absolute;
+	top:10%;
+	right:5%;
+	height:130px;
+}
+.sympton_msg.choose ul li{
+	color:#333;
+}
+/*拍照*/
+.take_photo{
+	width:80px;
+	height:80px;
+	border-radius:50px;
+	position:absolute;
+    /*bottom:50px;*/
+    /*left:50%;*/
+    /*margin-left:-40px;*/
+	background:#fff;
+	background:#fff url(../images/camera01_pressed.png) no-repeat center center;
+	background-size:65%;
+	display:block;
+}
+
+.rule {
+	background:url(../images/rule_icon.png) no-repeat center center;
+	position: absolute;
+    left: 14%;
+    bottom: 80px;
+    width: 40px;
+    height: 40px;
+}
+.rule_control{
+    width: 216px;
+    height: 60px;
+    background: url(../images/rule_control_new.png) no-repeat top center;
+    /*position:absolute;*/
+    /*left:50%;*/
+    /*bottom:140px;*/
+    /*margin-left:-108px;*/
+}
+
+.rule_control span {
+    font-size: 1.2em;
+    padding-top: 20px;
+    display: inline-block;
+    color: #fff;
+    /*margin-right:30px;*/
+}
+
+.rule_control span:last-child {
+    /*margin-right:0;*/
+}
+
+.progress_bar {
+    position: relative;
+    display: inline-block;
+    width: 90px;
+    height: 250px;
+    background: url(../images/progress.png) no-repeat right center;
+}
+
+.state {
+	width:60px;
+    height: 50px;
+    background: url(../images/bubble.png) no-repeat;
+    background-size: 75%;
+    color: #00cccc;
+    padding-left: 10px;
+    padding-top: 10px;
+    font-size: 1.2em;
+    position: absolute;
+    top: 100px;
+    left: 10px;
+}
+
+.progress_wrap {
+    position: absolute;
+    right: 5%;
+    top: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90px;
+    overflow: hidden;
+
+}
+
+.bar_wrap {
+    height: auto;
+    background: none;
+    color: #00cccc;
+    width: 16px;
+    position: absolute;
+    bottom: 0;
+    right: 11px;
+}
+
+.bar {
+    position: relative;
+    background: #00cccc;
+    width: 12px;
+    height: 125px;
+    border-radius: 10px;
+    margin-left: 6px;
+}
+
+.point {
+    width: 20px;
+    height: 20px;
+    background: url(../images/point.png) no-repeat;
+    position: absolute;
+    top: 0;
+    right: -4px;
+}
+
+/*拍照裁剪*/
+.menu_section.cut01 {
+    background: url(../images/cut01.png) no-repeat center 2px;
+}
+
+.menu_section.cut02 {
+    background: url(../images/cut02.png) no-repeat center 2px;
+}
+
+.menu_section.cut03 {
+    background: url(../images/cut03.png) no-repeat center 2px;
+}
+
+.menu_section.cut04 {
+    background: url(../images/cut04.png) no-repeat center 2px;
+}
+
+.menu_section.checked.cut04 {
+    background: url(../images/cut04_pressed.png) no-repeat center 2px;
+}
+
+.menu_section.checked.cut03 {
+    background: url(../images/cut03_pressed.png) no-repeat center 2px;
+}
+
+.menu_section.checked.cut02 {
+    background: url(../images/cut02_pressed.png) no-repeat center 2px;
+}
+
+.menu_section.checked.cut01 {
+    background: url(../images/cut01_pressed.png) no-repeat center 2px;
+}
+
+/*症状位置*/
+.patient_sex {
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    margin-bottom: 10px;
+    background: #fff;
+}
+
+.patient_sex label {
+    margin-left: 5%;
+    width: 25%;
+    display: inline-block;
+}
+
+.sex_man, .sex_woman {
+    width: 30%;
+    text-align: center;
+    display: inline-block;
+}
+
+.patient_sex input {
+    margin-right: 6px;
+}
+
+/*疾病列表*/
+.brand_wrap {
+    width: 100%;
+    margin: 0 auto;
+    display: block;
+    background: #fff;
+}
+
+.clearfix {
+    clear: both;
+}
+
+.brand_nav {
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: relative;
+    z-index: 1;
+}
+
+.brand_nav .brand_slide {
+    width: 15px;
+    height: 100%;
+    position: absolute;
+    right: 10px;
+    top: 65px;
+}
+
+.brand_nav .numA-Z {
+    padding: 5px 0 0 0;
+    width: 15px;
+    text-align: center;
+}
+
+.brand_nav .numA-Z a {
+    width: 15px;
+    height: 15px;
+    text-align: center;
+    display: block;
+    font-family: Arial;
+    font-size: 0.5em;
+    color: #44494d;
+    margin: 2px 0;
+}
+
+.brand_nav .numA-Z a:hover {
+    text-decoration: none;
+    background: #3697db;
+    color: #FFF;
+}
+
+/*.brand_nav .numA-Z .active {
+	width: 24px; 
+	height: 24px; 
+	border: 1px solid #3697db; 
+	font: 14px/24px Arial; 
+	text-align: center; 
+	background: #3697db; 
+	color: #FFF; 
+}*/
+/*brand_col*/
+.brand_col {
+    width: 100%;
+    height: 100%;
+    font-size: 0.875em;
+}
+
+.brand_col .brand_list {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    display: block;
+    overflow-y: scroll;
+}
+
+.brand_col .list_cont li {
+    display: block;
+    border-bottom: 1px solid #e6e6e6;
+    line-height: 40px;
+    margin: 0 15px;
+    padding: 0 5px;
+}
+
+.brand_col .list_cont li.no_border {
+    border: none;
+}
+
+.brand_col .list_cont li a {
+    display: block;
+}
+
+.brand_col .list_cont li a:hover {
+    color: #3697db;
+    text-decoration: none;
+    background-color: #eff2f5;
+}
+
+.brand_col .list_cont .name {
+    height: 23px;
+    background: #f8f8f8;
+    line-height: 22px;
+    padding-left: 10px;
+    margin: 0;
+    border: none;
+}
+
+.brand_col .list_cont .a2 {
+    padding-left: 28px;
+    height: 24px;
+    line-height: 24px;
+}
+
+.brand_col .list_cont .menu_li {
+    padding-left: 46px;
+    height: 24px;
+    line-height: 24px;
+}
+
+.brand_col .list_cont .menu_li a {
+    width: 93px;
+    height: 18px;
+    display: inline-block;
+    line-height: 18px;
+    padding: 0 2px;
+}
+
+.brand_col .list_cont .menu_li a:hover {
+    background: #3697db;
+    color: #FFF;
+    text-decoration: none;
+}
+
+.brand_col .list_cont .a1 {
+    height: auto;
+    padding-left: 0;
+    display: none
+}
+
+.brand_col .list_cont .a1 ul {
+    padding: 0;
+    margin: 8px 0;
+    background: url("../images/line05.png") repeat-y 10px top
+}
+
+.brand_col .list_cont .a1 li {
+    border-bottom: 0;
+}
+
+.brand_col .list_cont .a2 {
+    background: url("../images/line01.png") no-repeat;
+}
+
+.brand_col .list_cont .a2 a:hover {
+    background-color: #FFF;
+}
+
+.brand_col .list_cont .menu_li {
+    line-height: 20px;
+    height: 21px;
+    background: url("../images/line03.png") no-repeat 32px top;
+}
+
+.brand_col .list_cont .menu_no {
+    background: url("../images/line06.png") no-repeat 32px bottom;
+}

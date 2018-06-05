@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="viewport" content="height=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+<title>拍照</title>
+<link rel="stylesheet" href="../css/common.css"/>
+<link rel="stylesheet" href="../css/style.css"/>
+    <script type="text/javascript" src="../js/jquery-2.0.0.min.js"></script>
+</head>
+<body style="background:#000;">
+<div class="account_info">
+    <div class="regTop" style="background:none;"><a class="back" href="javascript:gotoBack()"></a></div>
+</div>
+</body>
+</html>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/app.js"></script>
+<script type="text/javascript" src="../script/user.js"></script>
+<script type="text/javascript" src="../script/navi.js"></script>
+<script type="text/javascript">
+
+    var cases;
+
+    apiready = function () {
+        // var y = $api.cssVal($api.dom(".regTop"), 'height');
+        // y = parseInt(y.substring(0, y.indexOf('px')));
+        var y = 0;
+        var h = api.winHeight - y;
+
+
+        cases = api.pageParam.cases;
+
+        var FNPhotograph = api.require('FNPhotograph');
+
+        FNPhotograph.openCameraView({
+            rect: {
+                x: 0,
+                y: y,
+                w: api.winWidth,
+                h: h
+            },
+            orientation: 'portrait',
+            fixedOn: api.frameName,
+            fixed: true
+        }, function (ret) {
+        });
+
+        FNPhotograph.setFocusBox({
+            box: {
+                // width: 1,
+                // color: '#ff0',
+                maxSize: 200,
+                minSize: 60
+            },
+            // autoHide : -1,
+
+        });
+        FNPhotograph.setFocusMode({
+            focusMode: 'auto'
+        });
+
+        FNPhotograph.getMaxZoom(function (ret) {
+            var maxZoom = 1;
+            if (ret.status) {
+                maxZoom = ret.zoom;
+            }
+            api.openFrame({
+                name: 'cameraScaleBar',
+                url: 'camera/scaleBar.html',
+                rect: {
+                    x: api.frameWidth - 60,
+                    y: y + 20,
+                    w: 60,
+                    h: 240
+                },
+                pageParam: {
+                    maxZoom: maxZoom
+                },
+                bounces: false,
+                vScrollBarEnabled: false,
+                hScrollBarEnabled: false
+            });
+
+        });
+        api.openFrame({
+            name: 'cameraScaleBtn',
+            url: 'camera/scaleBtn.html',
+            rect: {
+                x: 30,
+                y: api.frameHeight / 5 * 4 + 10,
+                w: 60,
+                h: 80
+            },
+            bounces: false,
+            vScrollBarEnabled: false,
+            hScrollBarEnabled: false
+        });
+
+        api.openFrame({
+            name: 'cameraTakePhotoBtn',
+            url: 'camera/takePhoto.html',
+            rect: {
+                x: api.frameWidth / 2 - 40,
+                y: api.frameHeight / 5 * 4,
+                w: 80,
+                h: 80
+            },
+            bounces: false,
+            vScrollBarEnabled: false,
+            hScrollBarEnabled: false
+        });
+
+        api.openFrame({
+            name: 'closeViewBtn',
+            url: 'image/goBack.html',
+            rect: {
+                x: 30,
+                y: 20,
+                w: 40,
+                h: 40
+            },
+            pageParam: {
+                closeEvent: 'closeForCamera'
+            },
+            bounces: false,
+            vScrollBarEnabled: false,
+            hScrollBarEnabled: false
+        });
+
+        if (!appConfig.cameraScaleHide) {
+            api.openFrame({
+                name: 'cameraScale',
+                url: 'camera/scale.html',
+                rect: {
+                    x: api.frameWidth / 2 - 110,
+                    y: api.frameHeight / 6 * 4,
+                    w: 226,
+                    h: 60
+                },
+                bounces: false,
+                vScrollBarEnabled: false,
+                hScrollBarEnabled: false
+            });
+
+        }
+
+        api.addEventListener({
+            name: 'closeForCamera'
+        }, function (ret, err) {
+            api.closeWin();
+        });
+
+        api.addEventListener({
+            name: 'takePhoto'
+        }, function (ret, err) {
+            FNPhotograph.takePhoto({
+                quality: 'high',
+                path: 'fs://cases/tmp/',
+                album: false
+            }, function (ret) {
+                api.openFrame({
+                    name: '"savePhoto"',
+                    url: 'camera/savePhoto.html',
+                    pageParam: {
+                        imagePath: ret.imagePath,
+                        cases: cases
+                    },
+                    bounces: false,
+                    scaleEnabled: true
+                });
+            });
+        });
+
+        api.addEventListener({
+            name: 'setZoom'
+        }, function (ret, err) {
+            FNPhotograph.setZoom({
+                zoom: ret.value.zoom
+            });
+        });
+
+        api.addEventListener({
+            name: 'closeCamera'
+        }, function (ret, err) {
+            FNPhotograph.close();
+            if (ret.value.imagePath) {
+                if (cases) {
+                    api.sendEvent({
+                        name: 'addImage',
+                        extra: {imagePath: ret.value.imagePath}
+                    });
+                } else {
+                    gotoEditCases(null, null, ret.value.imagePath)
+                }
+            }
+            api.closeWin("camera");
+        });
+
+        api.addEventListener({
+            name: 'toggleScale'
+        }, function (ret, err) {
+            if (appConfig.cameraScaleHide) {
+                appConfig.cameraScaleHide = false;
+            } else {
+                appConfig.cameraScaleHide = true;
+            }
+            saveAppConfig()
+            if (appConfig.cameraScaleHide) {
+                api.closeFrame({
+                    name: 'cameraScale'
+                });
+            } else {
+                FNPhotograph.getZoom(function (ret) {
+                    if (ret.status) {
+                        console.log(JSON.stringify(ret));
+                        api.openFrame({
+                            name: 'cameraScale',
+                            url: 'camera/scale.html',
+                            rect: {
+                                x: api.frameWidth / 2 - 110,
+                                y: api.frameHeight / 6 * 4,
+                                w: 226,
+                                h: 60
+                            },
+                            pageParam: {
+                                zoom: ret.zoom
+                            },
+                            bounces: false,
+                            vScrollBarEnabled: false,
+                            hScrollBarEnabled: false
+                        });
+                    }
+                });
+            }
+        });
+
+    }
+
+
+</script>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="viewport" content="height=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+    <title>账号信息</title>
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/style.css"/>
+    <script type="text/javascript" src="../js/jquery-2.0.0.min.js"></script>
+</head>
+<body>
+    <div class="account_info">
+        <div class="regTop">
+            <span class="title">账号信息</span>
+            <a class="back" href="main.html"></a>
+            <span class="edit">编辑</span>
+        </div>
+        <div class="content" style="padding-bottom:0;">
+            <div class="account_wrap">
+                <form id="user-detail-form" action="">
+                    <div class="message">
+                        <div class="message_line">
+                            <label>手机号</label>
+                            <input name="mobile" type="tel" placeholder="请输入手机号" pattern="[0-9]{11}" required readonly>
+                        </div>
+                        <div class="message_line">
+                            <label>用户名</label>
+                            <input name="nick" type="text" placeholder="请输入用户名" pattern="[0-9A-Za-z]{6,25}" required
+                                   readonly/>
+                        </div>
+                        <div class="message_line">
+                            <label>姓&nbsp;&nbsp;&nbsp;名</label>
+                            <input name="fullName" type="text" placeholder="请输入姓名"/>
+                        </div>
+                        <div class="message_line">
+                            <label>出生日期</label>
+                            <input name="birthday" type="date" placeholder="请输入出生日期"/>
+                        </div>
+                        <div id="sex-select" class="message_line">
+                            <label>性&nbsp;&nbsp;&nbsp;别</label>
+                            <input id="sex" name="sex" class="sex" type="text" placeholder="男" readonly/>
+                        </div>
+                    </div>
+                    <div class="message" style="padding:10px 0; margin-top:10px;">
+                        <a class="message_line" style="margin:0 auto;" href="javascript:gotoForgetPsd()">
+                            <label>修改密码</label>
+                            <span class="enter"></span>
+                        </a>
+
+                    </div>
+                    <button type="submit" class="submit">提交修改</button>
+                    <a href="javascript:void(0);" class="back_login" type="submit">注销登录</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/app.js"></script>
+<script type="text/javascript" src="../script/user.js"></script>
+<script type="text/javascript" src="../script/navi.js"></script>
+<script type="text/javascript">
+
+    document.getElementById('user-detail-form').addEventListener('submit', function (e) {
+        var disabled = $api.attr($api.dom('#sex'), 'disabled');
+        if (disabled) {
+            return;
+        }
+        var user = {
+            id: appConfig.user.id
+        };
+
+        var sex = 1;
+        if ($api.val($api.dom('input[name=sex]')) === "女") {
+            sex = 0;
+        }
+
+        user.sex = sex;
+        user.fullName = $api.val($api.dom("input[name=fullName]"));
+        user.birthDay = $api.val($api.dom("input[name=birthday]"))
+        userUtil.saveUser(user, function (ret) {
+            appConfig.user = ret;
+            saveAppConfig();
+            api.toast({
+                msg: '保存成功',
+                duration: 2000,
+                location: 'bottom'
+            });
+        });
+
+        e.preventDefault();
+    }, false);
+
+
+    $api.addEvt($api.dom('.back_login'), 'click', function () {
+        userUtil.logout(function () {
+            gotoLogin();
+        });
+    });
+
+    $api.addEvt($api.dom('#sex-select'), 'click', function () {
+        var disabled = $api.attr($api.dom('#sex'), 'disabled');
+        if (disabled) {
+            return;
+        }
+
+        var languageSelector = api.require("UIActionSelector");
+        languageSelector.open({
+            datas: [{name: "男", value: 1}, {name: "女", value: 0}],
+            layout: {
+                row: 4,
+                col: 1,
+                height: 40,
+                size: 20,
+                sizeActive: 22,
+                rowSpacing: 1,
+                colSpacing: 10,
+                maskBg: 'rgba(0,0,0,0.2)',
+                bg: '#fff',
+                color: '#888',
+                colorActive: '#f00',
+                colorSelected: '#f00'
+            },
+            animation: true,
+            cancel: {
+                text: '取消',
+                w: api.winWidth / 4,
+                // size: 12,
+                // w: 90,
+                // h: 35,
+                // bg: '#fff',
+                bgActive: '#ccc',
+                // color: '#888',
+                colorActive: '#fff'
+            },
+            ok: {
+                text: '确定',
+                // size: 12,
+                w: api.winWidth / 4,
+                // h: 40,
+                // bg: '#fff',
+                bgActive: '#ccc',
+                // color: '#888',
+                colorActive: '#fff'
+            },
+            title: {
+                text: '请选择性别',
+                // size: 12,
+                // h: 44,
+                // bg: '#eee',
+                // color: '#888'
+            },
+            fixedOn: api.frameName
+        }, function (ret, err) {
+            if (ret) {
+                if (ret.eventType == "ok") {
+                    var select = ret.selectedInfo[0].name;
+                    $api.val($api.dom('#sex'), select);
+                }
+            } else {
+                console.log(JSON.stringify(err));
+            }
+        });
+    });
+
+
+    apiready = function () {
+        $api.val($api.dom('input[name=mobile]'), appConfig.user.mobile);
+        $api.val($api.dom('input[name=nick]'), appConfig.user.nick);
+        $api.val($api.dom('input[name=fullName]'), appConfig.user.fullName);
+        $api.val($api.dom('input[name=birthday]'), new Date(appConfig.user.birthDay).Format("yyyy-MM-dd"));
+
+        var sexStr = "男"
+        if (appConfig.user.sex == 0) {
+            sexStr = "女"
+        }
+        $api.val($api.dom('input[name=sex]'), sexStr);
+    }
+
+
+    var s_h = window.screen.height;
+    //alert(s_h);
+    $('.account_wrap').height(s_h - 65);
+
+
+    $('.message input').attr('disabled', 'disabled');
+    $('.edit').click(function (e) {
+        var ed_txt = $(this).text();
+        if (ed_txt == '编辑') {
+            $('.message input').attr('disabled', false);
+            $(this).text('取消');
+        } else {
+            $('.message input').attr('disabled', true);
+            $(this).text('编辑');
+        }
+    });
+		
+    
+</script>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="viewport" content="height=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+    <title>注册</title>
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/register.css"/>
+</head>
+<body>
+    <div class="register">
+        <div class="regTop">
+            <span class="title">注册账号</span>
+            <a class="back" href="javascript:gotoLogin()"></a>
+        </div>
+        <div class="content">
+            <form id="register-form" action="">
+                <div class="message">
+                    <div class="message_line">
+                    	<label>手机号</label>
+                        <input id="mobileNum" name="mobile" type="tel" placeholder="请输入手机号"
+                               pattern="^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$" required
+                               oninvalid="this.setCustomValidity('请输入正确的手机号');" oninput="setCustomValidity('')">
+                    </div>
+                    <div class="message_line">
+                    	<label>用户名</label>
+                        <input id="nick" name="nick" type="text" placeholder="请输入用户名" pattern="[0-9A-Za-z_]{6,25}"
+                               oninvalid="this.setCustomValidity('6~25字母数字或下划线');" oninput="setCustomValidity('')"
+                               required/>
+                    </div>
+                    <div class="message_line">
+                    	<label>密&nbsp;&nbsp;&nbsp;码</label>
+                        <input id="password" name="password" type="password" placeholder="请输入6-25位密码"
+                               pattern="[0-9A-Za-z]{6,25}" required onchange="checkPassword()"/>
+                    </div>
+                    <div class="message_line">
+                    	<label>重复密码</label>
+                        <input id="repassword" type="password" placeholder="请再次输入密码" onchange="checkPassword()"/>
+                    </div>
+                    <div class="message_line" style="border-bottom:none;">
+                    	<label>验证码</label>
+                        <input id="authcode" name="authcode" type="text" placeholder="输入验证码" pattern="[0-9]{6}"
+                               required/>
+                    </div>
+                    <a id="sendAuthcode" class="code" required>获取验证码</a>
+                    <a id="waitToRecive" class="code" style="display:none;">60s</a>
+                </div>
+                <!--<div class="agree">
+                    <input type="checkbox"/><span>&nbsp;同意&nbsp;</span><a href="">《注册协议》</a>
+                </div>
+                <button class="submit" type="submit">注册</button>-->
+                <!--</form>-->
+                <div action="" style="margin-top:30px;">
+            	<div class="message">
+                	<div class="message_line">
+                    	<label>姓&nbsp;&nbsp;&nbsp;名</label>
+                        <input type="text" placeholder="请输入姓名"/>
+                    </div>
+                    <div class="message_line">
+                    	<label>出生日期</label>
+                        <input type="date" placeholder="请输入出生日期"/>
+                    </div>
+                    <div class="message_line" style="border-bottom:none;" id="sex-select">
+                    	<label>性&nbsp;&nbsp;&nbsp;别</label>
+                        <input id="sex" class="sex" type="text" placeholder="点击选择性别" readonly/>
+                    </div>
+                </div>
+                    <!--<a href="javascript:register();" class="submit" type="submit">完成注册</a>-->
+                    <input type="submit" class="submit" value="完成注册">
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/app.js"></script>
+<script type="text/javascript" src="../script/navi.js"></script>
+<script type="text/javascript">
+
+
+    document.getElementById('register-form').addEventListener('submit', function (e) {
+        var mobile = $api.val($api.dom('#mobileNum'));
+        var nick = $api.val($api.dom('#nick'));
+        var password = $api.val($api.dom('#password'));
+        var authcode = $api.val($api.dom('#authcode'));
+        api.ajax({
+            url: globalConfig.serverUrl + "security/auth/register/mobile?authcode=" + authcode,
+            method: 'post',
+            headers: {
+                "Content-Type": 'application/json',
+                "Accept": 'application/json'
+            },
+            data: {
+                body: {
+                    mobile: mobile,
+                    password: password,
+                    nick: nick,
+                    params: {}
+                }
+            }
+        }, function (ret, err) {
+            if (ret) {
+                $api.toast('注册成功', '');
+                setTimeout(gotoLogin, 500);
+            } else {
+                var errMsg = JSON.parse(err.msg);
+                alert(errMsg.errorMsg);
+            }
+        });
+        e.preventDefault();
+    }, false);
+
+
+    function register() {
+        var form = document.getElementById('register-form');
+        console.log(JSON.stringify(form));
+        console.log(JSON.stringify(form.value));
+        return;
+
+        var mobile = $api.val($api.dom('#mobileNum'));
+        var nick = $api.val($api.dom('#nick'));
+        var password = $api.val($api.dom('#password'));
+        var authcode = $api.val($api.dom('#authcode'));
+
+
+        api.ajax({
+            url: globalConfig.serverUrl + "security/auth/register/mobile?authcode=" + authcode,
+            method: 'post',
+            headers: {
+                "Content-Type": 'application/json',
+                "Accept": 'application/json'
+            },
+            data: {
+                body: {
+                    mobile: mobile,
+                    password: password,
+                    params: {}
+                }
+            }
+        }, function (ret, err) {
+            if (ret) {
+                $api.toast('注册成功', '');
+                setTimeout(gotoLogin, 500);
+            } else {
+                var errMsg = JSON.parse(err.msg);
+                alert(errMsg.errorMsg);
+            }
+        });
+    }
+
+
+    function isMobile(mobile) {
+        var mbReg = /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/;
+        return mbReg.test(mobile);
+    }
+
+    $api.addEvt($api.dom('#sendAuthcode'), 'click', function () {
+        var mobile = $api.val($api.dom('#mobileNum'));
+        if (!isMobile(mobile)) {
+            api.alert({
+                title: '输入错误',
+                msg: '请输入正确的手机号',
+                buttons: '确定'
+            });
+            return;
+        }
+        $api.css($api.dom('#waitToRecive'), 'display:block;');
+        $api.css($api.dom('#sendAuthcode'), 'display:none;');
+        api.ajax({
+            url: globalConfig.serverUrl + "security/authcode/phone",
+            method: 'post',
+            headers: {
+                "Accept": 'application/json'
+            },
+            data: {
+                values: {
+                    to: mobile,
+                    len: 6
+                },
+            }
+        }, function (ret, err) {
+            if (ret) {
+                var time = 60;
+                var wait = setInterval(function () {
+                    if (time-- == 0) {
+                        clearInterval(wait);
+                        $api.css($api.dom('#waitToRecive'), 'display:none;');
+                        $api.css($api.dom('#sendAuthcode'), 'display:block;');
+                    } else {
+                        $api.text($api.dom('#waitToRecive'), time + "s");
+                    }
+                }, 1000);
+            } else {
+                console.log(JSON.stringify(err));
+                $api.css($api.dom('#waitToRecive'), 'display:none;');
+                $api.css($api.dom('#sendAuthcode'), 'display:block;');
+                api.alert({
+                    title: '发送失败',
+                    msg: err.body.errorMsg,
+                    buttons: '确定'
+                });
+            }
+        });
+
+    });
+
+    $api.addEvt($api.dom('#sex-select'), 'click', function () {
+        var languageSelector = api.require("UIActionSelector");
+        languageSelector.open({
+            datas: [{name: "男", value: 1}, {name: "女", value: 0}],
+            layout: {
+                row: 4,
+                col: 1,
+                height: 40,
+                size: 20,
+                sizeActive: 22,
+                rowSpacing: 1,
+                colSpacing: 10,
+                maskBg: 'rgba(0,0,0,0.2)',
+                bg: '#fff',
+                color: '#888',
+                colorActive: '#f00',
+                colorSelected: '#f00'
+            },
+            animation: true,
+            cancel: {
+                text: '取消',
+                w: api.winWidth / 4,
+                // size: 12,
+                // w: 90,
+                // h: 35,
+                // bg: '#fff',
+                bgActive: '#ccc',
+                // color: '#888',
+                colorActive: '#fff'
+            },
+            ok: {
+                text: '确定',
+                // size: 12,
+                w: api.winWidth / 4,
+                // h: 40,
+                // bg: '#fff',
+                bgActive: '#ccc',
+                // color: '#888',
+                colorActive: '#fff'
+            },
+            title: {
+                text: '请选择性别',
+                // size: 12,
+                // h: 44,
+                // bg: '#eee',
+                // color: '#888'
+            },
+            fixedOn: api.frameName
+        }, function (ret, err) {
+            if (ret) {
+                if (ret.eventType == "ok") {
+                    var select = ret.selectedInfo[0].name;
+                    $api.val($api.dom('#sex'), select);
+                }
+            } else {
+                console.log(JSON.stringify(err));
+            }
+        });
+    });
+
+    apiready = function () {
+    }
+
+    function checkPassword() {
+        var pass1 = document.getElementById("password");
+        var pass2 = document.getElementById("repassword");
+
+        if (pass1.value != pass2.value)
+            pass2.setCustomValidity("两次输入的密码不匹配");
+        else
+            pass2.setCustomValidity("");
+    }
+
+</script>

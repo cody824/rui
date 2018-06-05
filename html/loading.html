@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>载入</title>
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/style.css"/>
+    <script type="text/javascript" src="../js/jquery-2.0.0.min.js"></script>
+</head>
+<body style="background:#00cccc;">
+	<div class="loading_wrap">
+    	<div class="loading">
+            <img class="loading_up" src="../images/loading_up.png">
+            <img class="loading_down" src="../images/loading_down.png">
+        </div>
+    </div>
+    <script type="text/javascript">
+    	$(function(){
+			setTimeout( function(){
+
+                $('.loading_up').animate({bottom: 90}).slideDown();
+				$('.loading_down').delay(500).animate({bottom:40}).fadeIn();
+				/*$('.loading_down').delay(50).animate({bottom:40}).fadeIn();*/
+			}, 500 );
+		})
+		window.onload=function()
+		{
+		setInterval("redirect();",2500);
+		}
+		function redirect()
+		{
+		window.location.href="login.html";
+        }
+    </script>
+</body>
+</html>

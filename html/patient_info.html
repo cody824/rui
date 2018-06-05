@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="viewport" content="height=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+    <title>患者信息</title>
+    <link rel="stylesheet" href="../css/common.css"/>
+    <link rel="stylesheet" href="../css/style.css"/>
+    <script type="text/javascript" src="../js/jquery-2.0.0.min.js"></script>
+</head>
+<body>
+    <div class="account_info">
+        <div class="regTop">
+            <span class="title">患者信息</span>
+            <a class="back" href="javascript:void(0);"></a>
+            <span class="edit">编辑</span>
+        </div>
+        <div class="content">
+            <form id="modify-patient-form" action="">
+                <div class="account_set">
+                    <div class="message">
+                        <span class="clear info">患者信息</span>
+                    </div>
+                </div>
+                <div class="message">
+                    <div class="message_line">
+                        <label>姓名</label>
+                        <input name="patientName" type="text" value=""/>
+                    </div>
+                    <div class="message_line">
+                        <label>年龄</label>
+                        <input name="age" type="text" value=""/>
+                    </div>
+                    <div class="message_line" id="sex-select">
+                        <label>性别</label>
+                        <input id="sex" name="sex" class="sex" type="text" value="男" readonly/>
+                    </div>
+                    <div class="sex_choose">
+                        <span>男</span>
+                        <span>女</span>
+                    </div>
+                </div>
+                <div class="account_set">
+                    <div class="message">
+                        <span class="clear option">可选项</span>
+                    </div>
+                </div>
+                <div class="message">
+                    <div class="message_line">
+                        <label>联系方式</label>
+                        <input name="contactInfo" type="tel" value=""/>
+                    </div>
+                    <div class="message_line">
+                        <label>就诊号</label>
+                        <input name="medicalNumber" type="text" value=""/>
+                    </div>
+                </div>
+                <button type="submit" class="submit delete_patient">删除患者</button>
+            </form>
+            
+        </div>
+    </div>
+    <div class="shadow">
+        <div class="modify_msg patient_msg">
+        	<h5>确定要删除该患者吗？</h5>
+            <button id="del-patient-btn" class="sure" type="button" style="margin-right:40px;">确定</button>
+            <button class="cancel" type="button">取消</button>
+        </div>
+</body>
+</html>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/app.js"></script>
+<script type="text/javascript" src="../script/user.js"></script>
+<script type="text/javascript" src="../script/patient.js"></script>
+<script type="text/javascript" src="../script/cases.js"></script>
+<script type="text/javascript" src="../script/navi.js"></script>
+<script type="text/javascript">
+    var patient;
+
+
+		$('.message input').attr('disabled','disabled');
+		$('.edit').click(function(e) {
+        	var ed_txt=$(this).text();
+			if(ed_txt=='编辑'){
+				$('.message input').attr('disabled',false);
+				$(this).text('取消'); 
+				$('.delete_patient').css('background','#ff9966'); 
+				$('.delete_patient').text('保存修改');
+			}else{
+				$('.message input').attr('disabled',true); 
+				$(this).text('编辑'); 
+				$('.delete_patient').css('background','#ff3300'); 
+				$('.delete_patient').text('删除患者');
+			} 
+        });
+
+    document.getElementById('modify-patient-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var de_txt = $(".delete_patient").text();
+        if (de_txt == '删除患者') {
+            api.confirm({
+                title: '提示',
+                msg: '确认要删除患者吗？',
+                buttons: ["确认", "取消"]
+            }, function (ret, err) {
+                if (ret.buttonIndex == 1) {
+                    patientPool.del(api.pageParam.patient.id, function () {
+                        gotoMain();
+                    });
+                }
+            });
+            return;
+        }
+        var sex = 1;
+        if ($api.val($api.dom('input[name=sex]')) === "女") {
+            sex = 0;
+        }
+        patient.patientName = $api.val($api.dom('input[name=patientName]'));
+        patient.age = $api.val($api.dom('input[name=age]'));
+        patient.sex = sex;
+        if ($api.val($api.dom('input[name=contactInfo]'))) {
+            patient.contactInfo = $api.val($api.dom('input[name=contactInfo]'));
+        }
+        if ($api.val($api.dom('input[name=medicalNumber]'))) {
+            patient.medicalNumber = $api.val($api.dom('input[name=medicalNumber]'));
+        }
+        patientPool.update(patient, function () {
+            $('.edit').trigger('click');
+            api.toast({
+                msg: '保存成功',
+                duration: 2000,
+                location: 'top'
+            });
+        });
+    }, false);
+
+
+    $api.addEvt($api.dom('#sex-select'), 'click', function () {
+        var disabled = $api.attr($api.dom('#sex'), 'disabled');
+        console.log(disabled);
+        if (disabled) {
+            return;
+        }
+
+        var languageSelector = api.require("UIActionSelector");
+        languageSelector.open({
+            datas: [{name: "男", value: 1}, {name: "女", value: 0}],
+            layout: {
+                row: 4,
+                col: 1,
+                height: 40,
+                size: 20,
+                sizeActive: 22,
+                rowSpacing: 1,
+                colSpacing: 10,
+                maskBg: 'rgba(0,0,0,0.2)',
+                bg: '#fff',
+                color: '#888',
+                colorActive: '#f00',
+                colorSelected: '#f00'
+            },
+            animation: true,
+            cancel: {
+                text: '取消',
+                w: api.winWidth / 4,
+                // size: 12,
+                // w: 90,
+                // h: 35,
+                // bg: '#fff',
+                bgActive: '#ccc',
+                // color: '#888',
+                colorActive: '#fff'
+            },
+            ok: {
+                text: '确定',
+                // size: 12,
+                w: api.winWidth / 4,
+                // h: 40,
+                // bg: '#fff',
+                bgActive: '#ccc',
+                // color: '#888',
+                colorActive: '#fff'
+            },
+            title: {
+                text: '请选择性别',
+                // size: 12,
+                // h: 44,
+                // bg: '#eee',
+                // color: '#888'
+            },
+            fixedOn: api.frameName
+        }, function (ret, err) {
+            if (ret) {
+                if (ret.eventType == "ok") {
+                    var select = ret.selectedInfo[0].name;
+                    $api.val($api.dom('#sex'), select);
+                }
+            } else {
+                console.log(JSON.stringify(err));
+            }
+        });
+        });
+
+    apiready = function () {
+        patient = api.pageParam.patient;
+        $api.val($api.dom('input[name=patientName]'), patient.patientName);
+        $api.val($api.dom('input[name=age]'), patient.age);
+        var sexStr = "男"
+        if (patient.sex == 0) {
+            sexStr = "女"
+        }
+        $api.val($api.dom('input[name=sex]'), sexStr);
+        if (patient.contactInfo) {
+            $api.val($api.dom('input[name=contactInfo]'), patient.contactInfo);
+        }
+        if (patient.medicalNumber) {
+            $api.val($api.dom('input[name=medicalNumber]'), patient.medicalNumber);
+        }
+
+
+        api.addEventListener({
+            name: 'keyback'
+        }, function (ret, err) {
+            console.log(api.pageParam.lastWin);
+            if (api.pageParam.lastWin == "main") {
+                gotoMain();
+            } else {
+                gotoPatientCases(patient)
+            }
+            return false;
+        });
+    }
+
+
+    $api.addEvt($api.dom('.back'), "click", function () {
+        if (api.pageParam.lastWin == "main") {
+            gotoMain();
+        } else {
+            gotoPatientCases(patient)
+        }
+    });
+</script>

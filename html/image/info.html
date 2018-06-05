@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="viewport"
+          content="height=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+    <title>拍照</title>
+    <style type="text/css">
+        body {
+            background: transparent;
+            padding: 0;
+            margin: 0;
+        }
+
+        img {
+            border: none;
+            display: table;
+        }
+
+        .patient {
+            color: #fff;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .disease {
+            color: #fff;
+            font-size: 14px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<span class="patient"></span>&nbsp&nbsp<span class="disease"></span>
+</body>
+</html>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script>
+
+    apiready = function () {
+        $api.text($api.dom('.patient'), api.pageParam.patientName);
+        $api.text($api.dom('.disease'), api.pageParam.disease);
+
+        api.addEventListener({
+            name: 'infoChange'
+        }, function (ret, err) {
+            $api.text($api.dom('.patient'), ret.value.patientName);
+            $api.text($api.dom('.disease'), ret.value.disease);
+        });
+    }
+
+</script>
